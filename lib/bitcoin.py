@@ -89,7 +89,7 @@ class NetworkConstants:
     @classmethod
     def set_mainnet(cls):
         cls.TESTNET = False
-        cls.WIF_PREFIX = 0x80
+        cls.WIF_PREFIX = 210
         cls.ADDRTYPE_P2PKH = 82  # 0x52
         cls.ADDRTYPE_P2SH = 7  # 0x07
         cls.SEGWIT_HRP = "xzc"
@@ -527,10 +527,10 @@ def DecodeBase58Check(psz):
 # extended key export format for segwit
 
 SCRIPT_TYPES = {
-    'p2pkh':82,
+    'p2pkh':0,
     'p2wpkh':1,
     'p2wpkh-p2sh':2,
-    'p2sh':7,
+    'p2sh':5,
     'p2wsh':6,
     'p2wsh-p2sh':7
 }
