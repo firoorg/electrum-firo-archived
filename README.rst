@@ -5,7 +5,6 @@ Electrum-XZC - Lightweight Zcoin client
 
   Licence: MIT Licence
   Original Author: Thomas Voegtlin
-  Port Maintainer: Pooler, SN
   Language: Python
   Homepage: https://zcoin.io/
 
