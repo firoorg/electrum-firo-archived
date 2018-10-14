@@ -40,7 +40,26 @@ If you cloned the git repository, you need to compile extra files
 before you can run Electrum. Read the next section, "Development
 Version".
 
+Troubleshooting
+===============
 
+Errors like::
+
+  cannot import name 'icons_rc'
+  Error: Could not find icons file.
+  Please run 'pyrcc5 icons.qrc -o gui/qt/icons_rc.py', and reinstall Electrum
+
+
+Solution::
+  
+  Python2 + PyQt4:
+  QT_HASH_SEED=0 pyrcc4 icons.qrc -o gui/qt/icons_rc.py -py2
+  Python3 + PyQt4:
+  QT_HASH_SEED=0 pyrcc4 icons.qrc -o gui/qt/icons_rc.py -py3
+  Python3 + PyQt5:
+  QT_HASH_SEED=0 pyrcc5 icons.qrc -o gui/qt/icons_rc.py
+  
+(from https://github.com/spesmilo/electrum/issues/3042#issuecomment-364854449)
 
 Development version
 ===================
