@@ -111,7 +111,7 @@ class NetworkConstants:
         cls.ADDRTYPE_P2PKH = 65
         cls.ADDRTYPE_P2SH = 178
         cls.SEGWIT_HRP = "txzc"
-        cls.GENESIS = "1e3487fdb1a7d46dac3e8f3e58339c6eff54abf6aef353485f3ed64250a35e89"
+        cls.GENESIS = "7ac038c193c2158c428c59f9ae0c02a07115141c6e9dc244ae96132e99b4e642"
         cls.DEFAULT_PORTS = {'t':'51001', 's':'51002'}
         cls.DEFAULT_SERVERS = read_json('servers_testnet.json', {})
         cls.CHECKPOINTS = read_json('checkpoints_testnet.json', [])
