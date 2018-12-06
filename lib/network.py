@@ -854,6 +854,8 @@ class Network(util.DaemonThread):
                 interface.blockchain = chain
                 interface.good = height
                 next_height = (interface.bad + interface.good) // 2
+                if next_height == height:
+                    next_height += 1
                 assert next_height >= self.max_checkpoint(), (interface.bad, interface.good)
             else:
                 if height == 0:
