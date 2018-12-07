@@ -1,4 +1,10 @@
 {
+    "electrumx.zcoin.io": {
+        "pruning": "-",
+        "s": "50002",
+        "t": "50001",
+        "version": "1.1"
+    },
     "electrumx01.zcoin.io": {
         "pruning": "-",
         "s": "50002",
