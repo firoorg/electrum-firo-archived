@@ -960,7 +960,8 @@ class Network(util.DaemonThread):
             if interface.request and time.time() - interface.request_time > 20:
                 interface.print_error("blockchain request timed out")
                 self.connection_down(interface.server)
-                continue
+            if interface.server_version and ''.join(interface.server_version).find('varhdr') == -1:
+                self.connection_down(interface.server) # "The server does not support variable header size"
 
     def wait_on_sockets(self):
         # Python docs say Windows doesn't like empty selects.
