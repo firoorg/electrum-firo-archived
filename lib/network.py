@@ -34,6 +34,8 @@ import socket
 import json
 
 import socks
+from pyatspi import interface
+
 from . import util
 from . import bitcoin
 from .bitcoin import *
@@ -554,10 +556,12 @@ class Network(util.DaemonThread):
             if error is None:
                 self.relay_fee = int(result * COIN)
                 self.print_error("relayfee", self.relay_fee)
-        elif method == 'blockchain.block.get_chunk':
-            self.on_get_chunk(interface, response)
+        elif method == 'blockchain.block.headers':
+            self.on_block_headers(interface, response)
         elif method == 'blockchain.block.get_header':
             self.on_get_header(interface, response)
+        elif method == 'blockchain.block.header':
+            self.on_raw_header(interface, response)
 
         for callback in callbacks:
             callback(response)
@@ -761,27 +765,35 @@ class Network(util.DaemonThread):
             return
         interface.print_error("requesting chunk %d" % index)
         self.requested_chunks.add(index)
-        self.queue_request('blockchain.block.get_chunk', [index], interface)
+        height = index * 2016
+        self.queue_request('blockchain.block.headers', [height, 2016],
+                           interface)
 
-    def on_get_chunk(self, interface, response):
+    def on_block_headers(self, interface, response):
         '''Handle receiving a chunk of block headers'''
         error = response.get('error')
         result = response.get('result')
         params = response.get('params')
+        blockchain = interface.blockchain
         if result is None or params is None or error is not None:
             interface.print_error(error or 'bad response')
             return
-        index = params[0]
         # Ignore unsolicited chunks
-        if index not in self.requested_chunks:
+        height = params[0]
+        index = height // 2016
+        if index * 2016 != height or index not in self.requested_chunks:
+            interface.print_error("received chunk %d (unsolicited)" % index)
             return
+        else:
+            interface.print_error("received chunk %d" % index)
         self.requested_chunks.remove(index)
-        connect = interface.blockchain.connect_chunk(index, result)
+        hexdata = result['hex']
+        connect = blockchain.connect_chunk(index, hexdata)
         if not connect:
             self.connection_down(interface.server)
             return
         # If not finished, get the next chunk
-        if interface.blockchain.height() < interface.tip:
+        if index >= len(blockchain.checkpoints) and blockchain.height() < interface.tip:
             self.request_chunk(interface, index+1)
         else:
             interface.mode = 'default'
@@ -790,6 +802,26 @@ class Network(util.DaemonThread):
         self.notify('updated')
 
     def request_header(self, interface, height):
+        #interface.print_error("requesting header %d" % height)
+        if height == 0:
+            self.request_electrum_header(interface, height)
+            return
+        self.queue_request('blockchain.block.header', [height - 1], interface)
+        interface.request = height - 1
+        interface.req_time = time.time()
+
+    def on_raw_header(self, interface, response):
+        result = response.get('result')
+        if result is None:
+            self.connection_down(interface.server)
+            next_height = None
+            return
+        header = bfh(result['header'])
+        height = int(result['height'])
+        self.blockchain().store_raw_header(header, height)
+        self.request_electrum_header(interface, height + 1)
+
+    def request_electrum_header(self, interface, height):
         #interface.print_error("requesting header %d" % height)
         self.queue_request('blockchain.block.get_header', [height], interface)
         interface.request = height
@@ -822,6 +854,8 @@ class Network(util.DaemonThread):
                 interface.blockchain = chain
                 interface.good = height
                 next_height = (interface.bad + interface.good) // 2
+                if next_height == height:
+                    next_height += 1
                 assert next_height >= self.max_checkpoint(), (interface.bad, interface.good)
             else:
                 if height == 0:
@@ -926,7 +960,8 @@ class Network(util.DaemonThread):
             if interface.request and time.time() - interface.request_time > 20:
                 interface.print_error("blockchain request timed out")
                 self.connection_down(interface.server)
-                continue
+            if interface.server_version and ''.join(interface.server_version).find('varhdr') == -1:
+                self.connection_down(interface.server) # "The server does not support variable header size"
 
     def wait_on_sockets(self):
         # Python docs say Windows doesn't like empty selects.

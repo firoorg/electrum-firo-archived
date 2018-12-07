@@ -26,19 +26,8 @@ import threading
 from . import util
 from . import bitcoin
 from .bitcoin import *
-# import lyra2z_hash
-
-# try:
-#     import scrypt
-#     getPoWHash = lambda x: scrypt.hash(x, x, N=1024, r=1, p=1, buflen=32)
-# except ImportError:
-#     util.print_msg("Warning: package scrypt not available; synchronization could be very slow")
-#     from .scrypt import scrypt_1024_1_1_80 as getPoWHash
 
 MAX_TARGET = 0x00000FFFFF000000000000000000000000000000000000000000000000000000
-HF_LYRA2VAR_HEIGHT = 500
-HF_LYRA2_HEIGHT = 8192
-HF_LYRA2Z_HEIGHT = 20500
 
 def serialize_header(res):
     s = int_to_hex(res.get('version'), 4) \
@@ -67,35 +56,6 @@ def hash_header(header):
     if header.get('prev_block_hash') is None:
         header['prev_block_hash'] = '00'*32
     return hash_encode(Hash(bfh(serialize_header(header))))
-
-def pow_hash_header(header):
-    return hash_encode(getPoWHash(bfh(serialize_header(header))))
-    # if (!fTestNet & & nHeight >= HF_LYRA2Z_HEIGHT) {
-    # lyra2z_hash(BEGIN(nVersion), BEGIN(powHash));
-    # } else if (!fTestNet & & nHeight >= HF_LYRA2_HEIGHT) {
-    # LYRA2(BEGIN(powHash), 32, BEGIN(nVersion), 80, BEGIN(nVersion), 80, 2, 8192, 256);
-    # } else if (!fTestNet & & nHeight >= HF_LYRA2VAR_HEIGHT) {
-    # LYRA2(BEGIN(powHash), 32, BEGIN(nVersion), 80, BEGIN(nVersion), 80, 2, nHeight, 256);
-    # } else if (fTestNet & & nHeight >= HF_LYRA2Z_HEIGHT_TESTNET) {// testnet
-    # lyra2z_hash(BEGIN(nVersion), BEGIN(powHash));
-    # } else if (fTestNet & & nHeight >= HF_LYRA2_HEIGHT_TESTNET) {// testnet
-    # LYRA2(BEGIN(powHash), 32, BEGIN(nVersion), 80, BEGIN(nVersion), 80, 2, 8192, 256);
-    # } else if (fTestNet & & nHeight >= HF_LYRA2VAR_HEIGHT_TESTNET) {// testnet
-    # LYRA2(BEGIN(powHash), 32, BEGIN(nVersion), 80, BEGIN(nVersion), 80, 2, nHeight, 256);
-    # } else {
-    # scrypt_N_1_1_256(BEGIN(nVersion), BEGIN(powHash), GetNfactor(nTime));
-    # }
-    # try:
-    #     height = header.get('block_height')
-    #     if height >= HF_LYRA2Z_HEIGHT:
-    #         return hash_encode(lyra2z_hash.getPoWHash(bfh(serialize_header(header))))
-    #     elif height >= HF_LYRA2_HEIGHT:
-    #         return hash_encode(lyra2z_hash.getPoWHash(bfh(serialize_header(header))))
-    #     else:
-    #         return hash_encode(lyra2z_hash.getPoWHash(bfh(serialize_header(header))))
-    # except Exception as e:
-    #     print_error(e)
-
 
 blockchains = {}
 
@@ -146,6 +106,22 @@ class Blockchain(util.PrintError):
         self.lock = threading.Lock()
         with self.lock:
             self.update_size()
+        self.raw_dir = os.path.join(os.path.dirname(self.path()), "raw_headers")
+        import errno
+        try:
+            os.makedirs(self.raw_dir)
+        except OSError as exc:
+            if exc.errno == errno.EEXIST and os.path.isdir(self.raw_dir):
+                pass
+            else:
+                raise
+        for file in os.listdir(self.raw_dir):
+            file_path = os.path.join(self.raw_dir, file)
+            try:
+                if os.path.isfile(file_path):
+                    os.unlink(file_path)
+            except Exception as e:
+                print(e)
 
     def parent(self):
         return blockchains[self.parent_id]
@@ -370,7 +346,7 @@ class Blockchain(util.PrintError):
         if height == 0:
             return hash_header(header) == bitcoin.NetworkConstants.GENESIS
         try:
-            prev_hash = self.get_hash(height - 1)
+            prev_hash = self.get_hash_raw_header(height - 1)
         except:
             return False
         if prev_hash != header.get('prev_block_hash'):
@@ -404,3 +380,24 @@ class Blockchain(util.PrintError):
             tstamp = self.get_timestamp((index+1) * 2016 - 1)
             cp.append((h, target, tstamp))
         return cp
+
+    def store_raw_header(self, header:bytes, height:int):
+        file_name = os.path.join(self.raw_dir, str(height))
+        with open(file_name, 'wb+') as f:
+            f.write(header)
+            f.close()
+
+    def get_hash_raw_header(self, height: int):
+        if height == -1:
+            return '0000000000000000000000000000000000000000000000000000000000000000'
+        elif height == 0:
+            return bitcoin.NetworkConstants.GENESIS
+        else:
+            file_name = os.path.join(self.raw_dir, str(height))
+            if not os.path.isfile(file_name):
+                raise "Raw file header for {} not found".format(height)
+
+            raw_header = bytes()
+            with open(file_name, 'rb+') as f:
+                raw_header = f.read()
+            return hash_encode(Hash(raw_header))
