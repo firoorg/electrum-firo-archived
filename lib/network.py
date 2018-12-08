@@ -34,7 +34,6 @@ import socket
 import json
 
 import socks
-from pyatspi import interface
 
 from . import util
 from . import bitcoin
