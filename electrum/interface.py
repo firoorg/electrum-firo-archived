@@ -343,7 +343,7 @@ class Interface(PrintError):
         # use lower timeout as we usually have network.bhi_lock here
         timeout = self.network.get_network_timeout_seconds(NetworkTimeout.Urgent)
         res = await self.session.send_request('blockchain.block.header', [height], timeout=timeout)
-        return blockchain.deserialize_header(bytes.fromhex(res), height)
+        return blockchain.deserialize_header(bytes.fromhex(res['header']), height)
 
     async def request_chunk(self, height, tip=None, *, can_return_early=False):
         index = height // 2016

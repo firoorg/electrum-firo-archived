@@ -6,5 +6,5 @@ test -n "$contrib" -a -d "$contrib" || exit
 rm "$contrib"/../packages/ -r
 
 #Install pure python modules in electrum directory
-python3 -m pip install -r $contrib/deterministic-build/requirements.txt -t $contrib/../packages
+python3.6 -m pip install -r $contrib/deterministic-build/requirements.txt -t $contrib/../packages
 

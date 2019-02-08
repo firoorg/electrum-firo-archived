@@ -10,11 +10,11 @@ from PyQt5.QtCore import Qt, QThread, pyqtSignal
 from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QLabel, QProgressBar,
                              QHBoxLayout, QPushButton)
 
-from electrum import version
-from electrum import constants
-from electrum import ecc
-from electrum.i18n import _
-from electrum.util import PrintError, make_aiohttp_session
+from electrum_xzc import version
+from electrum_xzc import constants
+from electrum_xzc import ecc
+from electrum_xzc.i18n import _
+from electrum_xzc.util import PrintError, make_aiohttp_session
 
 
 class UpdateCheck(QWidget, PrintError):

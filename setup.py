@@ -26,7 +26,7 @@ with open('contrib/requirements/requirements-hw.txt') as f:
     requirements_hw = f.read().splitlines()
 
 # load version.py; needlessly complicated alternative to "imp.load_source":
-version_spec = importlib.util.spec_from_file_location('version', 'electrum/version.py')
+version_spec = importlib.util.spec_from_file_location('version', 'electrum_xzc/version.py')
 version_module = version = importlib.util.module_from_spec(version_spec)
 version_spec.loader.exec_module(version_module)
 
@@ -59,31 +59,31 @@ extras_require['full'] = [pkg for sublist in list(extras_require.values()) for p
 
 
 setup(
-    name="Electrum",
+    name="Electrum-XZC",
     version=version.ELECTRUM_VERSION,
     python_requires='>={}'.format(MIN_PYTHON_VERSION),
     install_requires=requirements,
     extras_require=extras_require,
     packages=[
-        'electrum',
-        'electrum.gui',
-        'electrum.gui.qt',
-        'electrum.plugins',
-    ] + [('electrum.plugins.'+pkg) for pkg in find_packages('electrum/plugins')],
+        'electrum_xzc',
+        'electrum_xzc.gui',
+        'electrum_xzc.gui.qt',
+        'electrum_xzc.plugins',
+    ] + [('electrum_xzc.plugins.'+pkg) for pkg in find_packages('electrum_xzc/plugins')],
     package_dir={
-        'electrum': 'electrum'
+        'electrum_xzc': 'electrum_xzc'
     },
     package_data={
         '': ['*.txt', '*.json', '*.ttf', '*.otf'],
-        'electrum': [
+        'electrum_xzc': [
             'wordlist/*.txt',
             'locale/*/LC_MESSAGES/electrum.mo',
         ],
-        'electrum.gui': [
+        'electrum_xzc.gui': [
             'icons/*',
         ],
     },
-    scripts=['electrum/electrum'],
+    scripts=['electrum_xzc/electrum'],
     data_files=data_files,
     description="Lightweight Bitcoin Wallet",
     author="Thomas Voegtlin",

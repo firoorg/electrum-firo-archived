@@ -32,14 +32,14 @@ from decimal import Decimal
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 
-from electrum.gui.qt.util import *
-from electrum.gui.qt.qrcodewidget import QRCodeWidget
-from electrum.gui.qt.amountedit import AmountEdit
-from electrum.gui.qt.main_window import StatusBarButton
-from electrum.gui.qt.installwizard import InstallWizard
-from electrum.i18n import _
-from electrum.plugin import hook
-from electrum.util import PrintError, is_valid_email
+from electrum_xzc.gui.qt.util import *
+from electrum_xzc.gui.qt.qrcodewidget import QRCodeWidget
+from electrum_xzc.gui.qt.amountedit import AmountEdit
+from electrum_xzc.gui.qt.main_window import StatusBarButton
+from electrum_xzc.gui.qt.installwizard import InstallWizard
+from electrum_xzc.i18n import _
+from electrum_xzc.plugin import hook
+from electrum_xzc.util import PrintError, is_valid_email
 from .trustedcoin import TrustedCoinPlugin, server
 
 

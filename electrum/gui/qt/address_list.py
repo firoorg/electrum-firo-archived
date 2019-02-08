@@ -24,11 +24,11 @@
 # SOFTWARE.
 import webbrowser
 
-from electrum.i18n import _
-from electrum.util import block_explorer_URL
-from electrum.plugin import run_hook
-from electrum.bitcoin import is_address
-from electrum.wallet import InternalAddressCorruption
+from electrum_xzc.i18n import _
+from electrum_xzc.util import block_explorer_URL
+from electrum_xzc.plugin import run_hook
+from electrum_xzc.bitcoin import is_address
+from electrum_xzc.wallet import InternalAddressCorruption
 
 from .util import *
 
@@ -148,7 +148,7 @@ class AddressList(MyTreeView):
         self.set_current_idx(set_address)
 
     def create_menu(self, position):
-        from electrum.wallet import Multisig_Wallet
+        from electrum_xzc.wallet import Multisig_Wallet
         is_multisig = isinstance(self.wallet, Multisig_Wallet)
         can_delete = self.wallet.can_delete_address()
         selected = self.selected_in_column(1)

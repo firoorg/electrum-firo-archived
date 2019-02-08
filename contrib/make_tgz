@@ -5,7 +5,7 @@ set -e
 CONTRIB="$(dirname "$(readlink -e "$0")")"
 ROOT_FOLDER="$CONTRIB"/..
 PACKAGES="$ROOT_FOLDER"/packages/
-LOCALE="$ROOT_FOLDER"/electrum/locale/
+LOCALE="$ROOT_FOLDER"/electrum_xzc/locale/
 
 (
     cd "$ROOT_FOLDER"
@@ -27,5 +27,5 @@ LOCALE="$ROOT_FOLDER"/electrum/locale/
     # we could build the kivy atlas potentially?
     #(cd electrum/gui/kivy/; make theming) || echo "building kivy atlas failed! skipping."
 
-    python3 setup.py --quiet sdist --format=zip,gztar
+    python3.6 setup.py sdist --format=zip,gztar
 )

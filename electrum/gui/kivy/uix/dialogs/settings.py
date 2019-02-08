@@ -3,11 +3,11 @@ from kivy.factory import Factory
 from kivy.properties import ObjectProperty
 from kivy.lang import Builder
 
-from electrum.util import base_units_list
-from electrum.i18n import languages
-from electrum.gui.kivy.i18n import _
-from electrum.plugin import run_hook
-from electrum import coinchooser
+from electrum_xzc.util import base_units_list
+from electrum_xzc.i18n import languages
+from electrum_xzc.gui.kivy.i18n import _
+from electrum_xzc.plugin import run_hook
+from electrum_xzc import coinchooser
 
 from .choice_dialog import ChoiceDialog
 
@@ -44,7 +44,7 @@ Builder.load_string('''
                 SettingsItem:
                     bu: app.base_unit
                     title: _('Denomination') + ': ' + self.bu
-                    description: _("Base unit for Bitcoin amounts.")
+                    description: _("Base unit for Zcoin amounts.")
                     action: partial(root.unit_dialog, self)
                 CardSeparator
                 SettingsItem:

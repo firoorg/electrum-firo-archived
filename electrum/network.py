@@ -49,7 +49,7 @@ from .bitcoin import COIN
 from . import constants
 from . import blockchain
 from . import bitcoin
-from .blockchain import Blockchain, HEADER_SIZE
+from .blockchain import Blockchain
 from .interface import (Interface, serialize_server, deserialize_server,
                         RequestTimedOut, NetworkTimeout)
 from .version import PROTOCOL_VERSION
@@ -209,7 +209,7 @@ class Network(PrintError):
         INSTANCE = self
 
         self.asyncio_loop = asyncio.get_event_loop()
-        assert self.asyncio_loop.is_running(), "event loop not running"
+#        assert self.asyncio_loop.is_running(), "event loop not running"
         self._loop_thread = None  # type: threading.Thread  # set by caller; only used for sanity checks
 
         if config is None:
@@ -719,7 +719,7 @@ class Network(PrintError):
     async def _init_headers_file(self):
         b = blockchain.get_best_chain()
         filename = b.path()
-        length = HEADER_SIZE * len(constants.net.CHECKPOINTS) * 2016
+        length = 180 * len(constants.net.CHECKPOINTS) * 2016
         if not os.path.exists(filename) or os.path.getsize(filename) < length:
             with open(filename, 'wb') as f:
                 if length > 0:

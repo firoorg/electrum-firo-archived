@@ -3,15 +3,15 @@
 import sys
 import asyncio
 
-from electrum import bitcoin
-from electrum.network import Network
-from electrum.util import json_encode, print_msg, create_and_start_event_loop, log_exceptions
+from electrum_xzc import bitcoin
+from electrum_xzc.network import Network
+from electrum_xzc.util import json_encode, print_msg, create_and_start_event_loop, log_exceptions
 
 
 try:
     addr = sys.argv[1]
 except Exception:
-    print("usage: get_history <bitcoin_address>")
+    print("usage: get_history <zcoin_address>")
     sys.exit(1)
 
 loop, stopping_fut, loop_thread = create_and_start_event_loop()

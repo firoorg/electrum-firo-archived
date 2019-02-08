@@ -23,9 +23,9 @@
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from electrum.i18n import _
-from electrum.mnemonic import Mnemonic
-import electrum.old_mnemonic
+from electrum_xzc.i18n import _
+from electrum_xzc.mnemonic import Mnemonic
+import electrum_xzc.old_mnemonic
 
 from .util import *
 from .qrtextedit import ShowQRTextEdit, ScanQRTextEdit
@@ -144,7 +144,7 @@ class SeedLayout(QVBoxLayout):
 
     def initialize_completer(self):
         english_list = Mnemonic('en').wordlist
-        old_list = electrum.old_mnemonic.words
+        old_list = electrum_xzc.old_mnemonic.words
         self.wordlist = english_list + list(set(old_list) - set(english_list)) #concat both lists
         self.wordlist.sort()
         self.completer = QCompleter(self.wordlist)
@@ -155,14 +155,14 @@ class SeedLayout(QVBoxLayout):
         return ' '.join(text.split())
 
     def on_edit(self):
-        from electrum.bitcoin import seed_type
+        from electrum_xzc.bitcoin import seed_type
         s = self.get_seed()
         b = self.is_seed(s)
         if not self.is_bip39:
             t = seed_type(s)
             label = _('Seed Type') + ': ' + t if t else ''
         else:
-            from electrum.keystore import bip39_is_checksum_valid
+            from electrum_xzc.keystore import bip39_is_checksum_valid
             is_checksum, is_wordlist = bip39_is_checksum_valid(s)
             status = ('checksum: ' + ('ok' if is_checksum else 'failed')) if is_wordlist else 'unknown wordlist'
             label = 'BIP39' + ' (%s)'%status
@@ -200,7 +200,7 @@ class KeysLayout(QVBoxLayout):
 class SeedDialog(WindowModalDialog):
 
     def __init__(self, parent, seed, passphrase):
-        WindowModalDialog.__init__(self, parent, ('Electrum - ' + _('Seed')))
+        WindowModalDialog.__init__(self, parent, ('Electrum-XZC - ' + _('Seed')))
         self.setMinimumWidth(400)
         vbox = QVBoxLayout(self)
         title =  _("Your wallet generation seed is:")
