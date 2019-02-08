@@ -3,14 +3,14 @@ import hashlib
 import sys
 import traceback
 
-from electrum.bitcoin import TYPE_ADDRESS, int_to_hex, var_int
-from electrum.bip32 import serialize_xpub
-from electrum.i18n import _
-from electrum.keystore import Hardware_KeyStore
-from electrum.transaction import Transaction
-from electrum.wallet import Standard_Wallet
-from electrum.util import print_error, bfh, bh2u, versiontuple, UserFacingException
-from electrum.base_wizard import ScriptTypeNotSupported
+from electrum_xzc.bitcoin import TYPE_ADDRESS, int_to_hex, var_int
+from electrum_xzc.bip32 import serialize_xpub
+from electrum_xzc.i18n import _
+from electrum_xzc.keystore import Hardware_KeyStore
+from electrum_xzc.transaction import Transaction
+from electrum_xzc.wallet import Standard_Wallet
+from electrum_xzc.util import print_error, bfh, bh2u, versiontuple, UserFacingException
+from electrum_xzc.base_wizard import ScriptTypeNotSupported
 
 from ..hw_wallet import HW_PluginBase
 from ..hw_wallet.plugin import is_any_tx_output_on_change_branch

@@ -28,9 +28,9 @@ from decimal import Decimal
 
 from PyQt5.QtGui import QFontMetrics
 
-from electrum import bitcoin
-from electrum.util import bfh, PrintError
-from electrum.transaction import TxOutput
+from electrum_xzc import bitcoin
+from electrum_xzc.util import bfh, PrintError
+from electrum_xzc.transaction import TxOutput
 
 from .qrtextedit import ScanQRTextEdit
 from .completion_text_edit import CompletionTextEdit
@@ -91,7 +91,7 @@ class PayToEdit(CompletionTextEdit, ScanQRTextEdit, PrintError):
             return bitcoin.TYPE_SCRIPT, script
 
     def parse_script(self, x):
-        from electrum.transaction import opcodes, push_script
+        from electrum_xzc.transaction import opcodes, push_script
         script = ''
         for word in x.split():
             if word[0:3] == 'OP_':
@@ -128,7 +128,7 @@ class PayToEdit(CompletionTextEdit, ScanQRTextEdit, PrintError):
         self.payto_address = None
         if len(lines) == 1:
             data = lines[0]
-            if data.startswith("bitcoin:"):
+            if data.startswith("zcoin:"):
                 self.scan_f(data)
                 return
             try:
@@ -202,7 +202,7 @@ class PayToEdit(CompletionTextEdit, ScanQRTextEdit, PrintError):
 
     def qr_input(self):
         data = super(PayToEdit,self).qr_input()
-        if data.startswith("bitcoin:"):
+        if data.startswith("zcoin:"):
             self.scan_f(data)
             # TODO: update fee
 

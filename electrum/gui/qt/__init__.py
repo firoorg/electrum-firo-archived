@@ -41,10 +41,10 @@ from PyQt5.QtWidgets import (QApplication, QSystemTrayIcon, QWidget, QMenu,
 from PyQt5.QtCore import QObject, pyqtSignal, QTimer
 import PyQt5.QtCore as QtCore
 
-from electrum.i18n import _, set_language
-from electrum.plugin import run_hook
-from electrum.base_wizard import GoBack
-from electrum.util import (UserCancelled, PrintError, profiler,
+from electrum_xzc.i18n import _, set_language
+from electrum_xzc.plugin import run_hook
+from electrum_xzc.base_wizard import GoBack
+from electrum_xzc.util import (UserCancelled, PrintError, profiler,
                            WalletFileException, BitcoinException, get_new_wallet_name)
 
 from .installwizard import InstallWizard
@@ -147,7 +147,7 @@ class ElectrumGui(PrintError):
             submenu.addAction(_("Close"), window.close)
         m.addAction(_("Dark/Light"), self.toggle_tray_icon)
         m.addSeparator()
-        m.addAction(_("Exit Electrum"), self.close)
+        m.addAction(_("Exit Electrum-XZC"), self.close)
 
     def tray_icon(self):
         if self.dark_icon:

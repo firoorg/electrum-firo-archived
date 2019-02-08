@@ -30,8 +30,8 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QLineEdit, QLabel, QGridLayout, QVBoxLayout, QCheckBox
 
-from electrum.i18n import _
-from electrum.plugin import run_hook
+from electrum_xzc.i18n import _
+from electrum_xzc.plugin import run_hook
 
 from .util import icon_path, WindowModalDialog, OkButton, CancelButton, Buttons
 

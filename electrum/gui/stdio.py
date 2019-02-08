@@ -2,11 +2,11 @@ from decimal import Decimal
 import getpass
 import datetime
 
-from electrum import WalletStorage, Wallet
-from electrum.util import format_satoshis, set_verbosity
-from electrum.bitcoin import is_address, COIN, TYPE_ADDRESS
-from electrum.transaction import TxOutput
-from electrum.network import TxBroadcastError, BestEffortRequestFailed
+from electrum_xzc import WalletStorage, Wallet
+from electrum_xzc.util import format_satoshis, set_verbosity
+from electrum_xzc.bitcoin import is_address, COIN, TYPE_ADDRESS
+from electrum_xzc.transaction import TxOutput
+from electrum_xzc.network import TxBroadcastError, BestEffortRequestFailed
 
 _ = lambda x:x  # i18n
 
@@ -21,7 +21,7 @@ class ElectrumGui:
         self.network = daemon.network
         storage = WalletStorage(config.get_wallet_path())
         if not storage.file_exists:
-            print("Wallet not found. try 'electrum create'")
+            print("Wallet not found. try 'electrum-xzc create'")
             exit()
         if storage.is_encrypted():
             password = getpass.getpass('Password:', stream=None)
@@ -168,7 +168,7 @@ class ElectrumGui:
 
     def do_send(self):
         if not is_address(self.str_recipient):
-            print(_('Invalid Bitcoin address'))
+            print(_('Invalid Zcoin address'))
             return
         try:
             amount = int(Decimal(self.str_amount) * COIN)
@@ -218,12 +218,12 @@ class ElectrumGui:
             #self.update_contacts_tab()
 
     def network_dialog(self):
-        print("use 'electrum setconfig server/proxy' to change your network settings")
+        print("use 'electrum-xzc setconfig server/proxy' to change your network settings")
         return True
 
 
     def settings_dialog(self):
-        print("use 'electrum setconfig' to change your settings")
+        print("use 'electrum-xzc setconfig' to change your settings")
         return True
 
     def password_dialog(self):

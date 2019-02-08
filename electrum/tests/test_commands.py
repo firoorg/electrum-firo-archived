@@ -1,7 +1,7 @@
 import unittest
 from decimal import Decimal
 
-from electrum.commands import Commands, eval_bool
+from electrum_xzc.commands import Commands, eval_bool
 
 from . import TestCaseForTestnet
 

@@ -6,7 +6,7 @@ from kivy.core.window import Window
 from kivy.uix.recycleview import RecycleView
 from kivy.uix.boxlayout import BoxLayout
 
-from electrum.gui.kivy.i18n import _
+from electrum_xzc.gui.kivy.i18n import _
 
 
 
