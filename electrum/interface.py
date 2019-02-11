@@ -375,6 +375,8 @@ class Interface(PrintError):
                 ver = await session.send_request('server.version', [ELECTRUM_VERSION, PROTOCOL_VERSION])
             except aiorpcx.jsonrpc.RPCError as e:
                 raise GracefulDisconnect(e)  # probably 'unsupported protocol version'
+            if ''.join(ver).find('varhdr') != -1:
+                raise GracefulDisconnect('Not connecting to the varhdr server')  # outdated servers
             if exit_early:
                 return
             self.print_error("connection established. version: {}".format(ver))
