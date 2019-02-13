@@ -206,7 +206,13 @@ class SimpleConfig(PrintError):
             decimal_point = map_.get(base_unit.lower())
             self._set_key_in_user_config('decimal_point', decimal_point)
 
+        import shutil
+        shutil.rmtree(os.path.join(self.path, 'raw_headers'))
+        shutil.rmtree(os.path.join(self.path, 'forks'))
+        os.remove(os.path.join(self.path, 'blockchain_headers'))
+
         self.set_key('config_version', 3)
+
 
     def _is_upgrade_method_needed(self, min_version, max_version):
         cur_version = self.get_config_version()
