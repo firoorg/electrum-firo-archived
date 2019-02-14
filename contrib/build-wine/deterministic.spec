@@ -42,8 +42,7 @@ datas = [
     (home+'electrum_xzc/locale', 'electrum_xzc/locale'),
     (home+'electrum_xzc/plugins', 'electrum_xzc/plugins'),
     ('C:\\Program Files (x86)\\ZBar\\bin\\', '.'),
-    (home+'icons/*.png', 'electrum_xzc/gui/icons'),
-    (home+'icons/*.svg', 'electrum_xzc/gui/icons'),
+    (home+'electrum_xzc/gui/icons', 'electrum_xzc/gui/icons'),
 ]
 datas += collect_data_files('trezorlib')
 datas += collect_data_files('safetlib')
@@ -120,7 +119,7 @@ exe_standalone = EXE(
     debug=False,
     strip=None,
     upx=False,
-    icon=home+'icons/electrum.ico',
+    icon=home+'electrum_xzc/gui/icons/electrum.ico',
     console=False)
     # console=True makes an annoying black box pop up, but it does make Electrum output command line commands, with this turned off no output will be given but commands can still be used
 
@@ -133,7 +132,7 @@ exe_portable = EXE(
     debug=False,
     strip=None,
     upx=False,
-    icon=home+'icons/electrum.ico',
+    icon=home+'electrum_xzc/gui/icons/electrum.ico',
     console=False)
 
 #####
@@ -147,7 +146,7 @@ exe_dependent = EXE(
     debug=False,
     strip=None,
     upx=False,
-    icon=home+'icons/electrum.ico',
+    icon=home+'electrum_xzc/gui/icons/electrum.ico',
     console=False)
 
 coll = COLLECT(
@@ -158,6 +157,6 @@ coll = COLLECT(
     strip=None,
     upx=True,
     debug=False,
-    icon=home+'icons/electrum.ico',
+    icon=home+'electrum_xzc/gui/icons/electrum.ico',
     console=False,
     name=os.path.join('dist', 'electrum-xzc'))
