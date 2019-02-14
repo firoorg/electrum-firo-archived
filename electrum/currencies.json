@@ -1,0 +1,12 @@
+{
+	"CryptoCompare": [
+		"USD",
+		"EUR",
+		"THB",
+		"BTC",
+		"ETH"
+	],
+	"TDAX": [
+		"THB"
+	]
+}
