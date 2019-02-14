@@ -63,7 +63,7 @@ class CScreen(Factory.Screen):
 
     @profiler
     def load_screen(self):
-        self.screen = Builder.load_file('electrum/gui/kivy/uix/ui_screens/' + self.kvname + '.kv')
+        self.screen = Builder.load_file('electrum_xzc/gui/kivy/uix/ui_screens/' + self.kvname + '.kv')
         self.add_widget(self.screen)
         self.loaded = True
         self.update()
@@ -135,7 +135,7 @@ class HistoryScreen(CScreen):
 
     def get_card(self, tx_hash, tx_mined_status, value, balance):
         status, status_str = self.app.wallet.get_tx_status(tx_hash, tx_mined_status)
-        icon = "atlas://electrum/gui/kivy/theming/light/" + TX_ICONS[status]
+        icon = "atlas://electrum_xzc/gui/kivy/theming/light/" + TX_ICONS[status]
         label = self.app.wallet.get_label(tx_hash) if tx_hash else _('Pruned transaction outputs')
         ri = {}
         ri['screen'] = self
@@ -173,9 +173,9 @@ class SendScreen(CScreen):
         if not self.app.wallet:
             self.payment_request_queued = text
             return
-        import electrum
+        import electrum_xzc
         try:
-            uri = electrum.util.parse_URI(text, self.app.on_pr)
+            uri = electrum_xzc.util.parse_URI(text, self.app.on_pr)
         except:
             self.app.show_info(_("Not a Bitcoin URI"))
             return
