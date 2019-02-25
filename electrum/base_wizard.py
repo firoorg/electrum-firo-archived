@@ -580,7 +580,9 @@ class BaseWizard(object):
                 ('create_segwit_seed', _('Segwit')),
                 ('create_standard_seed', _('Legacy')),
             ]
-        self.choice_dialog(title=title, message=message, choices=choices, run_next=self.run)
+        #self.choice_dialog(title=title, message=message, choices=choices, run_next=self.run)
+        out = ('create_standard_seed',)
+        self.run(*out)
 
     def create_segwit_seed(self): self.create_seed('segwit')
     def create_standard_seed(self): self.create_seed('standard')

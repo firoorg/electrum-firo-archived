@@ -414,7 +414,7 @@ class Blockchain(util.PrintError):
 
     @with_lock
     def save_header(self, header: dict) -> None:
-        assert header.get('block_height') == self.size(), (header.get('block_height'), self.size())
+        assert self.size() == header.get('block_height') - self.forkpoint
         delta = constants.net.COIN.static_header_offset(header.get('block_height')) - constants.net.COIN.static_header_offset(self.forkpoint)
         data = bfh(serialize_header(header))
         # headers are only _appended_ to the end:
