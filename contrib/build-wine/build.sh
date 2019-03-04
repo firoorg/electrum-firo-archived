@@ -2,6 +2,8 @@
 # Lucky number
 export PYTHONHASHSEED=22
 
+set -x
+
 here=$(dirname "$0")
 test -n "$here" -a -d "$here" || exit
 
