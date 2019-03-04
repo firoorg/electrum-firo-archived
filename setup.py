@@ -47,7 +47,7 @@ if platform.system() in ['Linux', 'FreeBSD', 'DragonFly']:
             usr_share = os.path.expanduser('~/.local/share')
     data_files += [
         (os.path.join(usr_share, 'applications/'), ['electrum.desktop']),
-        (os.path.join(usr_share, icons_dirname), ['electrum/gui/icons/electrum.png']),
+        (os.path.join(usr_share, icons_dirname), ['electrum_xzc/gui/icons/electrum.png']),
     ]
 
 extras_require = {
@@ -83,7 +83,7 @@ setup(
             'icons/*',
         ],
     },
-    scripts=['electrum_xzc/electrum'],
+    scripts=['electrum_xzc/electrum-xzc'],
     data_files=data_files,
     description="Lightweight Bitcoin Wallet",
     author="Thomas Voegtlin",
