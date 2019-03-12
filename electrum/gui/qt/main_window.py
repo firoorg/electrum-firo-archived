@@ -194,7 +194,7 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, PrintError):
         if self.config.get("is_maximized"):
             self.showMaximized()
 
-        self.setWindowIcon(read_QIcon("electrum.png"))
+        self.setWindowIcon(read_QIcon("electrum-xzc.png"))
         self.init_menubar()
 
         wrtabs = weakref.proxy(tabs)

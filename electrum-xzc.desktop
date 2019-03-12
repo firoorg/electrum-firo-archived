@@ -6,7 +6,7 @@ Comment=Lightweight Zcoin Client
 Exec=sh -c "PATH=\"\\$HOME/.local/bin:\\$PATH\"; electrum-xzc %u"
 GenericName[en_US]=Zcoin Wallet
 GenericName=Zcoin Wallet
-Icon=electrum
+Icon=electrum-xzc
 Name[en_US]=Electrum Zcoin Wallet
 Name=Electrum Zcoin Wallet
 Categories=Finance;Network;
