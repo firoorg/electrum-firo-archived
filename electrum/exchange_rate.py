@@ -129,6 +129,30 @@ class ExchangeBase(PrintError):
         return sorted([str(a) for (a, b) in rates.items() if b is not None and len(a)==3])
 
 
+class CryptoCompare(ExchangeBase):
+
+    async def get_rates(self,ccy):
+        json = await self.get_json('min-api.cryptocompare.com', '/data/price?fsym=XZC&tsyms=USD,EUR,THB,BTC,ETH')
+        return {'USD': Decimal(json['USD']), 'EUR': Decimal(json['EUR']), 'THB': Decimal(json['THB']), 'BTC': Decimal(json['BTC']), 'ETH': Decimal(json['ETH'])}
+
+    def history_ccys(self):
+        return ['USD', 'EUR', 'THB', 'BTC', 'ETH']
+
+    async def request_history(self, ccy):
+        query = '/data/histoday?fsym=XZC&tsym=%s&limit=2000&aggregate=1' % ccy
+        json = await self.get_json('min-api.cryptocompare.com', query)
+        history = json['Data']
+        return dict([(time.strftime('%Y-%m-%d', time.localtime(t['time'])), t['close'])
+                                    for t in history])
+
+
+class TDAX(ExchangeBase):
+
+    async def get_rates(self,ccy):
+        json = await self.get_json('api.tdax.com', '/marketcap')
+        return {'THB': Decimal(json['XZC_THB']['avg24hr'])}
+
+
 class Bit2C(ExchangeBase):
 
     def get_rates(self, ccy):
@@ -526,10 +550,10 @@ class FxThread(ThreadJob):
 
     def get_currency(self):
         '''Use when dynamic fetching is needed'''
-        return self.config.get("currency", "EUR")
+        return self.config.get("currency", "USD")
 
     def config_exchange(self):
-        return self.config.get('use_exchange', 'BitcoinAverage')
+        return self.config.get('use_exchange', 'CryptoCompare')
 
     def show_history(self):
         return self.is_enabled() and self.get_history_config() and self.ccy in self.exchange.history_ccys()
