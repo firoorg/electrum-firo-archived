@@ -1615,6 +1615,17 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, PrintError):
         if use_rbf:
             tx.set_rbf(True)
 
+        for k in sorted(self.wallet.get_keystores(), key=lambda ks: ks.ready_to_sign(), reverse=True):
+            if "ledger_keystore" in str(type(k)).lower() and len(tx.inputs()) > 50:
+                msgText = '\n'.join([
+                    _("The transaction has a big number of inputs to process."),
+                    _("It is a known limitation for Legder devices and may result in timing out a transaction confirmation dialog on the device."),
+                    _("Please visit the support section on the Ledger official website and search for 'Receive mining proceeds' for more information on how to deal with such cases."),
+                    _("Try sending the transaction?")
+                ])
+                if not self.question(msgText):
+                    return
+
         if fee < self.wallet.relayfee() * tx.estimated_size() / 1000:
             msgText = '\n'.join([
                 _("Your current server requires a higher fee to successfully propagate this transaction."),
