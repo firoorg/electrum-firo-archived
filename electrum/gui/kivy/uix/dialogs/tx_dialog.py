@@ -11,11 +11,11 @@ from kivy.uix.dropdown import DropDown
 from kivy.uix.button import Button
 
 from .question import Question
-from electrum.gui.kivy.i18n import _
+from electrum_xzc.gui.kivy.i18n import _
 
-from electrum.util import InvalidPassword
-from electrum.address_synchronizer import TX_HEIGHT_LOCAL
-from electrum.wallet import CannotBumpFee
+from electrum_xzc.util import InvalidPassword
+from electrum_xzc.address_synchronizer import TX_HEIGHT_LOCAL
+from electrum_xzc.wallet import CannotBumpFee
 
 
 Builder.load_string('''
@@ -96,7 +96,7 @@ Builder.load_string('''
             IconButton:
                 size_hint: 0.5, None
                 height: '48dp'
-                icon: 'atlas://electrum/gui/kivy/theming/light/qrcode'
+                icon: 'atlas://electrum_xzc/gui/kivy/theming/light/qrcode'
                 on_release: root.show_qr()
             Button:
                 size_hint: 0.5, None
@@ -247,7 +247,7 @@ class TxDialog(Factory.Popup):
         self.app.broadcast(self.tx)
 
     def show_qr(self):
-        from electrum.bitcoin import base_encode, bfh
+        from electrum_xzc.bitcoin import base_encode, bfh
         raw_tx = str(self.tx)
         text = bfh(raw_tx)
         text = base_encode(text, base=43)

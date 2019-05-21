@@ -23,7 +23,7 @@ from .logging import Logger
 
 DEFAULT_ENABLED = False
 DEFAULT_CURRENCY = "EUR"
-DEFAULT_EXCHANGE = "CoinGecko"  # default exchange should ideally provide historical rates
+DEFAULT_EXCHANGE = "CryptoCompare"  # default exchange should ideally provide historical rates
 
 
 # See https://en.wikipedia.org/wiki/ISO_4217
@@ -32,7 +32,8 @@ CCY_PRECISIONS = {'BHD': 3, 'BIF': 0, 'BYR': 0, 'CLF': 4, 'CLP': 0,
                   'JOD': 3, 'JPY': 0, 'KMF': 0, 'KRW': 0, 'KWD': 3,
                   'LYD': 3, 'MGA': 1, 'MRO': 1, 'OMR': 3, 'PYG': 0,
                   'RWF': 0, 'TND': 3, 'UGX': 0, 'UYI': 0, 'VND': 0,
-                  'VUV': 0, 'XAF': 0, 'XAU': 4, 'XOF': 0, 'XPF': 0}
+                  'VUV': 0, 'XAF': 0, 'XAU': 4, 'XOF': 0, 'XPF': 0,
+                  'BTC': 5, 'ETH': 4}
 
 
 class ExchangeBase(Logger):
@@ -142,13 +143,37 @@ class ExchangeBase(Logger):
         return sorted([str(a) for (a, b) in rates.items() if b is not None and len(a)==3])
 
 
+class CryptoCompare(ExchangeBase):
+
+    async def get_rates(self,ccy):
+        json = await self.get_json('min-api.cryptocompare.com', '/data/price?fsym=XZC&tsyms=USD,EUR,THB,BTC,ETH')
+        return {'USD': Decimal(json['USD']), 'EUR': Decimal(json['EUR']), 'THB': Decimal(json['THB']), 'BTC': Decimal(json['BTC']), 'ETH': Decimal(json['ETH'])}
+
+    def history_ccys(self):
+        return ['USD', 'EUR', 'THB', 'BTC', 'ETH']
+
+    async def request_history(self, ccy):
+        query = '/data/histoday?fsym=XZC&tsym=%s&limit=2000&aggregate=1' % ccy
+        json = await self.get_json('min-api.cryptocompare.com', query)
+        history = json['Data']
+        return dict([(time.strftime('%Y-%m-%d', time.localtime(t['time'])), t['close'])
+                                    for t in history])
+
+
+class TDAX(ExchangeBase):
+
+    async def get_rates(self,ccy):
+        json = await self.get_json('api.tdax.com', '/marketcap')
+        return {'THB': Decimal(json['XZC_THB']['avg24hr'])}
+
+
 class BitcoinAverage(ExchangeBase):
     # note: historical rates used to be freely available
     # but this is no longer the case. see #5188
 
     async def get_rates(self, ccy):
         json = await self.get_json('apiv2.bitcoinaverage.com', '/indices/global/ticker/short')
-        return dict([(r.replace("BTC", ""), Decimal(json[r]['last']))
+        return dict([(r.replace("XZC", ""), Decimal(json[r]['last']))
                      for r in json if r != 'timestamp'])
 
 
@@ -163,8 +188,8 @@ class BitcoinVenezuela(ExchangeBase):
 
     async def get_rates(self, ccy):
         json = await self.get_json('api.bitcoinvenezuela.com', '/')
-        rates = [(r, json['BTC'][r]) for r in json['BTC']
-                 if json['BTC'][r] is not None]  # Giving NULL for LTC
+        rates = [(r, json['XZC'][r]) for r in json['XZC']
+                 if json['XZC'][r] is not None]  # Giving NULL for LTC
         return dict(rates)
 
     def history_ccys(self):
@@ -172,8 +197,8 @@ class BitcoinVenezuela(ExchangeBase):
 
     async def request_history(self, ccy):
         json = await self.get_json('api.bitcoinvenezuela.com',
-                             "/historical/index.php?coin=BTC")
-        return json[ccy +'_BTC']
+                             "/historical/index.php?coin=XZC")
+        return json[ccy +'_XZC']
 
 
 class Bitbank(ExchangeBase):
@@ -248,7 +273,7 @@ class Coinbase(ExchangeBase):
 
     async def get_rates(self, ccy):
         json = await self.get_json('api.coinbase.com',
-                             '/v2/exchange-rates?currency=BTC')
+                             '/v2/exchange-rates?currency=XZC')
         return {ccy: Decimal(rate) for (ccy, rate) in json["data"]["rates"].items()}
 
 
@@ -333,7 +358,7 @@ class Kraken(ExchangeBase):
 
     async def get_rates(self, ccy):
         ccys = ['EUR', 'USD', 'CAD', 'GBP', 'JPY']
-        pairs = ['XBT%s' % c for c in ccys]
+        pairs = ['XZC%s' % c for c in ccys]
         json = await self.get_json('api.kraken.com',
                              '/0/public/Ticker?pair=%s' % ','.join(pairs))
         return dict((k[-3:], Decimal(float(v['c'][0])))
@@ -388,7 +413,7 @@ class Winkdex(ExchangeBase):
 
 class Zaif(ExchangeBase):
     async def get_rates(self, ccy):
-        json = await self.get_json('api.zaif.jp', '/api/1/last_price/btc_jpy')
+        json = await self.get_json('api.zaif.jp', '/api/1/last_price/xzc_jpy')
         return {'JPY': Decimal(json['last_price'])}
 
 

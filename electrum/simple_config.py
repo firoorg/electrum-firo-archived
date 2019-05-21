@@ -207,7 +207,7 @@ class SimpleConfig(Logger):
         base_unit = self.user_config.get('base_unit')
         if isinstance(base_unit, str):
             self._set_key_in_user_config('base_unit', None)
-            map_ = {'btc':8, 'mbtc':5, 'ubtc':2, 'bits':2, 'sat':0}
+            map_ = {'xzc':8, 'mxzc':5, 'uxzc':2, 'bits':2, 'sat':0}
             decimal_point = map_.get(base_unit.lower())
             self._set_key_in_user_config('decimal_point', decimal_point)
 
@@ -483,7 +483,7 @@ class SimpleConfig(Logger):
             return self.has_fee_etas()
 
     def is_dynfee(self):
-        return bool(self.get('dynamic_fees', True))
+        return bool(self.get('dynamic_fees', False))
 
     def use_mempool_fees(self):
         return bool(self.get('mempool_fees', False))

@@ -2,9 +2,9 @@ import shutil
 import tempfile
 import os
 
-from electrum.storage import WalletStorage
-from electrum.wallet import Wallet
-from electrum import constants
+from electrum_xzc.storage import WalletStorage
+from electrum_xzc.wallet import Wallet
+from electrum_xzc import constants
 
 from .test_wallet import WalletTestCase
 

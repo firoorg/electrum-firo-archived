@@ -25,7 +25,7 @@
 
 import os
 import json
-
+from . import coins
 from .util import inv_dict
 
 
@@ -39,8 +39,8 @@ def read_json(filename, default):
     return r
 
 
-GIT_REPO_URL = "https://github.com/spesmilo/electrum"
-GIT_REPO_ISSUES_URL = "https://github.com/spesmilo/electrum/issues"
+GIT_REPO_URL = "https://github.com/zcoinofficial/electrum-xzc"
+GIT_REPO_ISSUES_URL = "https://github.com/zcoinofficial/electrum-xzc/issues"
 
 
 class AbstractNet:
@@ -53,11 +53,11 @@ class AbstractNet:
 class BitcoinMainnet(AbstractNet):
 
     TESTNET = False
-    WIF_PREFIX = 0x80
-    ADDRTYPE_P2PKH = 0
-    ADDRTYPE_P2SH = 5
-    SEGWIT_HRP = "bc"
-    GENESIS = "000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f"
+    WIF_PREFIX = 210
+    ADDRTYPE_P2PKH = 82  # 0x52
+    ADDRTYPE_P2SH = 7  # 0x07
+    SEGWIT_HRP = "xzc"
+    GENESIS = "4381deb85b1b2c9843c222944b616d997516dcbd6a964e1eaf0def0830695233"
     DEFAULT_PORTS = {'t': '50001', 's': '50002'}
     DEFAULT_SERVERS = read_json('servers.json', {})
     CHECKPOINTS = read_json('checkpoints.json', [])
@@ -77,18 +77,18 @@ class BitcoinMainnet(AbstractNet):
         'p2wpkh':      0x04b24746,  # zpub
         'p2wsh':       0x02aa7ed3,  # Zpub
     }
+    BIP44_COIN_TYPE = 136
+    COIN = coins.Zcoin()
     XPUB_HEADERS_INV = inv_dict(XPUB_HEADERS)
-    BIP44_COIN_TYPE = 0
-
 
 class BitcoinTestnet(AbstractNet):
 
     TESTNET = True
-    WIF_PREFIX = 0xef
-    ADDRTYPE_P2PKH = 111
-    ADDRTYPE_P2SH = 196
-    SEGWIT_HRP = "tb"
-    GENESIS = "000000000933ea01ad0ee984209779baaec3ced90fa3f408719526f8d77f4943"
+    WIF_PREFIX = 185
+    ADDRTYPE_P2PKH = 65
+    ADDRTYPE_P2SH = 178
+    SEGWIT_HRP = "txzc"
+    GENESIS = "1e3487fdb1a7d46dac3e8f3e58339c6eff54abf6aef353485f3ed64250a35e89"
     DEFAULT_PORTS = {'t': '51001', 's': '51002'}
     DEFAULT_SERVERS = read_json('servers_testnet.json', {})
     CHECKPOINTS = read_json('checkpoints_testnet.json', [])
@@ -110,6 +110,7 @@ class BitcoinTestnet(AbstractNet):
     }
     XPUB_HEADERS_INV = inv_dict(XPUB_HEADERS)
     BIP44_COIN_TYPE = 1
+    COIN = coins.ZcoinTestnet()
 
 
 class BitcoinRegtest(BitcoinTestnet):

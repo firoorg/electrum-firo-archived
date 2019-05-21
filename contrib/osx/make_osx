@@ -3,7 +3,7 @@
 # Parameterize
 PYTHON_VERSION=3.6.4
 BUILDDIR=/tmp/electrum-build
-PACKAGE=Electrum
+PACKAGE=Electrum-XZC
 GIT_REPO=https://github.com/spesmilo/electrum
 LIBSECP_VERSION="b408c6a8b287003d1ade5709e6f7bc3c7f1d5be7"
 
@@ -17,7 +17,7 @@ src_dir=$(dirname "$0")
 cd $src_dir/../..
 
 export PYTHONHASHSEED=22
-VERSION=`git describe --tags --dirty --always`
+VERSION=`git describe --tags --always`
 
 which brew > /dev/null 2>&1 || fail "Please install brew from https://brew.sh/ to continue"
 which xcodebuild > /dev/null 2>&1 || fail "Please install Xcode and xcode command line tools to continue"

@@ -1,13 +1,13 @@
 [app]
 
 # (str) Title of your application
-title = Electrum
+title = Electrum-XZC
 
 # (str) Package name
-package.name = Electrum
+package.name = Electrum_XZC
 
 # (str) Package domain (needed for android/ios packaging)
-package.domain = org.electrum
+package.domain = org.electrum_xzc
 
 # (str) Source code where the main.py live
 source.dir = .
@@ -20,16 +20,16 @@ source.exclude_exts = spec
 
 # (list) List of directory to exclude (let empty to not exclude anything)
 source.exclude_dirs = bin, build, dist, contrib,
-    electrum/tests,
-    electrum/gui/qt,
-    electrum/gui/kivy/tools,
-    electrum/gui/kivy/theming/light
+    electrum_xzc/tests,
+    electrum_xzc/gui/qt,
+    electrum_xzc/gui/kivy/tools,
+    electrum_xzc/gui/kivy/theming/light
 # (list) List of exclusions using pattern matching
 source.exclude_patterns = Makefile,setup*
 
 # (str) Application versioning (method 1)
 version.regex = APK_VERSION = '(.*)'
-version.filename = %(source.dir)s/electrum/version.py
+version.filename = %(source.dir)s/electrum_xzc/version.py
 
 # (str) Application versioning (method 2)
 #version = 1.9.8
@@ -46,10 +46,10 @@ requirements =
 
 # (str) Presplash of the application
 #presplash.filename = %(source.dir)s/gui/kivy/theming/splash.png
-presplash.filename = %(source.dir)s/electrum/gui/icons/electrum_presplash.png
+presplash.filename = %(source.dir)s/electrum_xzc/gui/icons/electrum_presplash.png
 
 # (str) Icon of the application
-icon.filename = %(source.dir)s/electrum/gui/icons/electrum_launcher.png
+icon.filename = %(source.dir)s/electrum_xzc/gui/icons/electrum_launcher.png
 
 # (str) Supported orientation (one of landscape, portrait or all)
 orientation = portrait
@@ -101,11 +101,11 @@ android.sdk_path = /opt/android/android-sdk
 
 # (list) List of Java files to add to the android project (can be java or a
 # directory containing the files)
-android.add_src = electrum/gui/kivy/data/java-classes/
+android.add_src = electrum_xzc/gui/kivy/data/java-classes/
 
 android.gradle_dependencies = me.dm7.barcodescanner:zxing:1.9.8
 
-android.add_activities = org.electrum.qr.SimpleScannerActivity
+android.add_activities = org.electrum_xzc.qr.SimpleScannerActivity
 
 # (str) python-for-android branch to use, if not master, useful to try
 # not yet merged features.
@@ -119,7 +119,7 @@ android.add_activities = org.electrum.qr.SimpleScannerActivity
 #android.ouya.icon.filename = %(source.dir)s/data/ouya_icon.png
 
 # (str) XML file to include as an intent filters in <activity> tag
-android.manifest.intent_filters = electrum/gui/kivy/tools/bitcoin_intent.xml
+android.manifest.intent_filters = electrum_xzc/gui/kivy/tools/bitcoin_intent.xml
 
 # (str) launchMode to set for the main activity
 android.manifest.launch_mode = singleTask

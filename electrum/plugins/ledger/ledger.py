@@ -3,16 +3,16 @@ import hashlib
 import sys
 import traceback
 
-from electrum import ecc
-from electrum.bitcoin import TYPE_ADDRESS, int_to_hex, var_int, is_segwit_script_type
-from electrum.bip32 import BIP32Node
-from electrum.i18n import _
-from electrum.keystore import Hardware_KeyStore
-from electrum.transaction import Transaction
-from electrum.wallet import Standard_Wallet
-from electrum.util import bfh, bh2u, versiontuple, UserFacingException
-from electrum.base_wizard import ScriptTypeNotSupported
-from electrum.logging import get_logger
+from electrum_xzc import ecc
+from electrum_xzc.bitcoin import TYPE_ADDRESS, int_to_hex, var_int, is_segwit_script_type
+from electrum_xzc.bip32 import BIP32Node
+from electrum_xzc.i18n import _
+from electrum_xzc.keystore import Hardware_KeyStore
+from electrum_xzc.transaction import Transaction
+from electrum_xzc.wallet import Standard_Wallet
+from electrum_xzc.util import bfh, bh2u, versiontuple, UserFacingException
+from electrum_xzc.base_wizard import ScriptTypeNotSupported
+from electrum_xzc.logging import get_logger
 
 from ..hw_wallet import HW_PluginBase
 from ..hw_wallet.plugin import is_any_tx_output_on_change_branch
@@ -202,7 +202,7 @@ class Ledger_Client():
                 self.perform_hw1_preflight()
             except BTChipException as e:
                 if (e.sw == 0x6d00 or e.sw == 0x6700):
-                    raise UserFacingException(_("Device not in Bitcoin mode")) from e
+                    raise UserFacingException(_("Device not in Zcoin mode")) from e
                 raise e
             self.preflightDone = True
 

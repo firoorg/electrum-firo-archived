@@ -18,19 +18,19 @@ from kivy.lang import Builder
 from kivy.factory import Factory
 from kivy.utils import platform
 
-from electrum.util import profiler, parse_URI, format_time, InvalidPassword, NotEnoughFunds, Fiat
-from electrum import bitcoin
-from electrum.transaction import TxOutput, Transaction, tx_from_str
-from electrum.util import send_exception_to_crash_reporter, parse_URI, InvalidBitcoinURI
-from electrum.paymentrequest import PR_UNPAID, PR_PAID, PR_UNKNOWN, PR_EXPIRED
-from electrum.plugin import run_hook
-from electrum.wallet import InternalAddressCorruption
-from electrum import simple_config
+from electrum_xzc.util import profiler, parse_URI, format_time, InvalidPassword, NotEnoughFunds, Fiat
+from electrum_xzc import bitcoin
+from electrum_xzc.transaction import TxOutput, Transaction, tx_from_str
+from electrum_xzc.util import send_exception_to_crash_reporter, parse_URI, InvalidBitcoinURI
+from electrum_xzc.paymentrequest import PR_UNPAID, PR_PAID, PR_UNKNOWN, PR_EXPIRED
+from electrum_xzc.plugin import run_hook
+from electrum_xzc.wallet import InternalAddressCorruption
+from electrum_xzc import simple_config
 
 from .context_menu import ContextMenu
 
 
-from electrum.gui.kivy.i18n import _
+from electrum_xzc.gui.kivy.i18n import _
 
 class HistoryRecycleView(RecycleView):
     pass
@@ -64,7 +64,7 @@ class CScreen(Factory.Screen):
 
     @profiler
     def load_screen(self):
-        self.screen = Builder.load_file('electrum/gui/kivy/uix/ui_screens/' + self.kvname + '.kv')
+        self.screen = Builder.load_file('electrum_xzc/gui/kivy/uix/ui_screens/' + self.kvname + '.kv')
         self.add_widget(self.screen)
         self.loaded = True
         self.update()
@@ -136,7 +136,7 @@ class HistoryScreen(CScreen):
 
     def get_card(self, tx_hash, tx_mined_status, value, balance):
         status, status_str = self.app.wallet.get_tx_status(tx_hash, tx_mined_status)
-        icon = "atlas://electrum/gui/kivy/theming/light/" + TX_ICONS[status]
+        icon = "atlas://electrum_xzc/gui/kivy/theming/light/" + TX_ICONS[status]
         label = self.app.wallet.get_label(tx_hash) if tx_hash else _('Pruned transaction outputs')
         ri = {}
         ri['screen'] = self
@@ -217,7 +217,7 @@ class SendScreen(CScreen):
             # it should be already saved
             return
         # save address as invoice
-        from electrum.paymentrequest import make_unsigned_request, PaymentRequest
+        from electrum_xzc.paymentrequest import make_unsigned_request, PaymentRequest
         req = {'address':self.screen.address, 'memo':self.screen.message}
         amount = self.app.get_amount(self.screen.amount) if self.screen.amount else 0
         req['amount'] = amount
@@ -375,7 +375,7 @@ class ReceiveScreen(CScreen):
         Clock.schedule_once(lambda dt: self.update_qr())
 
     def get_URI(self):
-        from electrum.util import create_bip21_uri
+        from electrum_xzc.util import create_bip21_uri
         amount = self.screen.amount
         if amount:
             a, u = self.screen.amount.split()

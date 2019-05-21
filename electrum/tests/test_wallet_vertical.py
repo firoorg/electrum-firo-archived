@@ -5,16 +5,16 @@ import tempfile
 from typing import Sequence
 import asyncio
 
-from electrum import storage, bitcoin, keystore, bip32
-from electrum import Transaction
-from electrum import SimpleConfig
-from electrum.address_synchronizer import TX_HEIGHT_UNCONFIRMED, TX_HEIGHT_UNCONF_PARENT
-from electrum.wallet import sweep, Multisig_Wallet, Standard_Wallet, Imported_Wallet, restore_wallet_from_text
-from electrum.util import bfh, bh2u
-from electrum.transaction import TxOutput
-from electrum.mnemonic import seed_type
+from electrum_xzc import storage, bitcoin, keystore, bip32
+from electrum_xzc import Transaction
+from electrum_xzc import SimpleConfig
+from electrum_xzc.address_synchronizer import TX_HEIGHT_UNCONFIRMED, TX_HEIGHT_UNCONF_PARENT
+from electrum_xzc.wallet import sweep, Multisig_Wallet, Standard_Wallet, Imported_Wallet, restore_wallet_from_text
+from electrum_xzc.util import bfh, bh2u
+from electrum_xzc.transaction import TxOutput
+from electrum_xzc.mnemonic import seed_type
 
-from electrum.plugins.trustedcoin import trustedcoin
+from electrum_xzc.plugins.trustedcoin import trustedcoin
 
 from . import TestCaseForTestnet
 from . import SequentialTestCase

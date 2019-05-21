@@ -50,7 +50,7 @@ from .bitcoin import COIN
 from . import constants
 from . import blockchain
 from . import bitcoin
-from .blockchain import Blockchain, HEADER_SIZE
+from .blockchain import Blockchain
 from .interface import (Interface, serialize_server, deserialize_server,
                         RequestTimedOut, NetworkTimeout, BUCKET_NAME_OF_ONION_SERVERS)
 from .version import PROTOCOL_VERSION
@@ -799,7 +799,7 @@ class Network(Logger):
     async def _init_headers_file(self):
         b = blockchain.get_best_chain()
         filename = b.path()
-        length = HEADER_SIZE * len(constants.net.CHECKPOINTS) * 2016
+        length = 180 * len(constants.net.CHECKPOINTS) * 2016
         if not os.path.exists(filename) or os.path.getsize(filename) < length:
             with open(filename, 'wb') as f:
                 if length > 0:

@@ -29,16 +29,16 @@ from xmlrpc.client import ServerProxy
 from PyQt5.QtCore import QObject, pyqtSignal
 from PyQt5.QtWidgets import QPushButton
 
-from electrum import util, keystore, ecc, crypto
-from electrum import transaction
-from electrum.bip32 import BIP32Node
-from electrum.plugin import BasePlugin, hook
-from electrum.i18n import _
-from electrum.wallet import Multisig_Wallet
-from electrum.util import bh2u, bfh
+from electrum_xzc import util, keystore, ecc, crypto
+from electrum_xzc import transaction
+from electrum_xzc.bip32 import BIP32Node
+from electrum_xzc.plugin import BasePlugin, hook
+from electrum_xzc.i18n import _
+from electrum_xzc.wallet import Multisig_Wallet
+from electrum_xzc.util import bh2u, bfh
 
-from electrum.gui.qt.transaction_dialog import show_transaction
-from electrum.gui.qt.util import WaitingDialog
+from electrum_xzc.gui.qt.transaction_dialog import show_transaction
+from electrum_xzc.gui.qt.util import WaitingDialog
 
 import sys
 import traceback
@@ -161,7 +161,7 @@ class Plugin(BasePlugin):
             d.cosigner_send_button.hide()
 
     def cosigner_can_sign(self, tx, cosigner_xpub):
-        from electrum.keystore import is_xpubkey, parse_xpubkey
+        from electrum_xzc.keystore import is_xpubkey, parse_xpubkey
         xpub_set = set([])
         for txin in tx.inputs():
             for x_pubkey in txin['x_pubkeys']:

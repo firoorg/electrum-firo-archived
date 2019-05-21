@@ -1,4 +1,4 @@
-from electrum.i18n import _
+from electrum_xzc.i18n import _
 
 fullname = 'GreenAddress instant'
 description = _("Allows validating if your transactions have instant confirmations by GreenAddress")

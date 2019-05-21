@@ -28,9 +28,9 @@ from PyQt5.QtGui import QPixmap, QPalette
 from PyQt5.QtWidgets import (QVBoxLayout, QCheckBox, QHBoxLayout, QLineEdit,
                              QLabel, QCompleter, QDialog, QStyledItemDelegate)
 
-from electrum.i18n import _
-from electrum.mnemonic import Mnemonic, seed_type
-import electrum.old_mnemonic
+from electrum_xzc.i18n import _
+from electrum_xzc.mnemonic import Mnemonic, seed_type
+import electrum_xzc.old_mnemonic
 
 from .util import (Buttons, OkButton, WWLabel, ButtonsTextEdit, icon_path,
                    EnterButton, CloseButton, WindowModalDialog, ColorScheme)
@@ -150,7 +150,7 @@ class SeedLayout(QVBoxLayout):
 
     def initialize_completer(self):
         bip39_english_list = Mnemonic('en').wordlist
-        old_list = electrum.old_mnemonic.words
+        old_list = electrum_xzc.old_mnemonic.words
         only_old_list = set(old_list) - set(bip39_english_list)
         self.wordlist = bip39_english_list + list(only_old_list)  # concat both lists
         self.wordlist.sort()
@@ -182,7 +182,7 @@ class SeedLayout(QVBoxLayout):
             t = seed_type(s)
             label = _('Seed Type') + ': ' + t if t else ''
         else:
-            from electrum.keystore import bip39_is_checksum_valid
+            from electrum_xzc.keystore import bip39_is_checksum_valid
             is_checksum, is_wordlist = bip39_is_checksum_valid(s)
             status = ('checksum: ' + ('ok' if is_checksum else 'failed')) if is_wordlist else 'unknown wordlist'
             label = 'BIP39' + ' (%s)'%status
@@ -226,7 +226,7 @@ class KeysLayout(QVBoxLayout):
 class SeedDialog(WindowModalDialog):
 
     def __init__(self, parent, seed, passphrase):
-        WindowModalDialog.__init__(self, parent, ('Electrum - ' + _('Seed')))
+        WindowModalDialog.__init__(self, parent, ('Electrum-XZC - ' + _('Seed')))
         self.setMinimumWidth(400)
         vbox = QVBoxLayout(self)
         title =  _("Your wallet generation seed is:")

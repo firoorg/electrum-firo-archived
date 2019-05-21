@@ -6,16 +6,16 @@ from struct import pack, unpack
 import os, sys, time, io
 import traceback
 
-from electrum.bip32 import BIP32Node, InvalidMasterKeyVersionBytes
-from electrum.i18n import _
-from electrum.plugin import Device
-from electrum.keystore import Hardware_KeyStore, xpubkey_to_pubkey, Xpub
-from electrum.transaction import Transaction
-from electrum.wallet import Standard_Wallet
-from electrum.crypto import hash_160
-from electrum.util import bfh, bh2u, versiontuple, UserFacingException
-from electrum.base_wizard import ScriptTypeNotSupported
-from electrum.logging import get_logger
+from electrum_xzc.bip32 import BIP32Node, InvalidMasterKeyVersionBytes
+from electrum_xzc.i18n import _
+from electrum_xzc.plugin import Device
+from electrum_xzc.keystore import Hardware_KeyStore, xpubkey_to_pubkey, Xpub
+from electrum_xzc.transaction import Transaction
+from electrum_xzc.wallet import Standard_Wallet
+from electrum_xzc.crypto import hash_160
+from electrum_xzc.util import bfh, bh2u, versiontuple, UserFacingException
+from electrum_xzc.base_wizard import ScriptTypeNotSupported
+from electrum_xzc.logging import get_logger
 
 from ..hw_wallet import HW_PluginBase
 from ..hw_wallet.plugin import LibraryFoundButUnusable

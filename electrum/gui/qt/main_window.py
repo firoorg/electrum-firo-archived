@@ -47,13 +47,13 @@ from PyQt5.QtWidgets import (QMessageBox, QComboBox, QSystemTrayIcon, QTabWidget
                              QShortcut, QMainWindow, QCompleter, QInputDialog,
                              QWidget, QMenu, QSizePolicy, QStatusBar)
 
-import electrum
-from electrum import (keystore, simple_config, ecc, constants, util, bitcoin, commands,
+import electrum_xzc
+from electrum_xzc import (keystore, simple_config, ecc, constants, util, bitcoin, commands,
                       coinchooser, paymentrequest)
-from electrum.bitcoin import COIN, is_address, TYPE_ADDRESS
-from electrum.plugin import run_hook
-from electrum.i18n import _
-from electrum.util import (format_time, format_satoshis, format_fee_satoshis,
+from electrum_xzc.bitcoin import COIN, is_address, TYPE_ADDRESS
+from electrum_xzc.plugin import run_hook
+from electrum_xzc.i18n import _
+from electrum_xzc.util import (format_time, format_satoshis, format_fee_satoshis,
                            format_satoshis_plain, NotEnoughFunds,
                            UserCancelled, NoDynamicFeeEstimates, profiler,
                            export_meta, import_meta, bh2u, bfh, InvalidPassword,
@@ -62,16 +62,16 @@ from electrum.util import (format_time, format_satoshis, format_fee_satoshis,
                            UnknownBaseUnit, DECIMAL_POINT_DEFAULT, UserFacingException,
                            get_new_wallet_name, send_exception_to_crash_reporter,
                            InvalidBitcoinURI)
-from electrum.transaction import Transaction, TxOutput
-from electrum.address_synchronizer import AddTransactionException
-from electrum.wallet import (Multisig_Wallet, CannotBumpFee, Abstract_Wallet,
+from electrum_xzc.transaction import Transaction, TxOutput
+from electrum_xzc.address_synchronizer import AddTransactionException
+from electrum_xzc.wallet import (Multisig_Wallet, CannotBumpFee, Abstract_Wallet,
                              sweep_preparations, InternalAddressCorruption)
-from electrum.version import ELECTRUM_VERSION
-from electrum.network import Network, TxBroadcastError, BestEffortRequestFailed
-from electrum.exchange_rate import FxThread
-from electrum.simple_config import SimpleConfig
-from electrum.logging import Logger
-from electrum.paymentrequest import PR_PAID
+from electrum_xzc.version import ELECTRUM_VERSION
+from electrum_xzc.network import Network, TxBroadcastError, BestEffortRequestFailed
+from electrum_xzc.exchange_rate import FxThread
+from electrum_xzc.simple_config import SimpleConfig
+from electrum_xzc.logging import Logger
+from electrum_xzc.paymentrequest import PR_PAID
 
 from .exception_window import Exception_Hook
 from .amountedit import AmountEdit, BTCAmountEdit, MyLineEdit, FeerateEdit
@@ -194,7 +194,7 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger):
         if self.config.get("is_maximized"):
             self.showMaximized()
 
-        self.setWindowIcon(read_QIcon("electrum.png"))
+        self.setWindowIcon(read_QIcon("electrum-xzc.png"))
         self.init_menubar()
 
         wrtabs = weakref.proxy(tabs)
@@ -237,9 +237,9 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger):
         self.fetch_alias()
 
         # If the option hasn't been set yet
-        if config.get('check_updates') is None:
-            choice = self.question(title="Electrum - " + _("Enable update check"),
-                                   msg=_("For security reasons we advise that you always use the latest version of Electrum.") + " " +
+        if config.get('check_updates', False) is None:
+            choice = self.question(title="Electrum-XZC - " + _("Enable update check"),
+                                   msg=_("For security reasons we advise that you always use the latest version of Electrum-XZC.") + " " +
                                        _("Would you like to be notified when there is a newer version of Electrum available?"))
             config.set_key('check_updates', bool(choice), save=True)
 
@@ -446,7 +446,7 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger):
             self.setGeometry(100, 100, 840, 400)
 
     def watching_only_changed(self):
-        name = "Electrum Testnet" if constants.net.TESTNET else "Electrum"
+        name = "Electrum-XZC Testnet" if constants.net.TESTNET else "Electrum-XZC"
         title = '%s %s  -  %s' % (name, ELECTRUM_VERSION,
                                         self.wallet.basename())
         extra = [self.wallet.storage.get('wallet_type', '?')]
@@ -463,8 +463,8 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger):
         if self.wallet.is_watching_only():
             msg = ' '.join([
                 _("This wallet is watching-only."),
-                _("This means you will not be able to spend Bitcoins with it."),
-                _("Make sure you own the seed phrase or the private keys, before you request Bitcoins to be sent to this wallet.")
+                _("This means you will not be able to spend Zcoins with it."),
+                _("Make sure you own the seed phrase or the private keys, before you request Zcoins to be sent to this wallet.")
             ])
             self.show_warning(msg, title=_('Watch-only wallet'))
 
@@ -481,7 +481,7 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger):
         msg = ''.join([
             _("You are in testnet mode."), ' ',
             _("Testnet coins are worthless."), '\n',
-            _("Testnet is separate from the main Bitcoin network. It is used for testing.")
+            _("Testnet is separate from the main Zcoin network. It is used for testing.")
         ])
         cb = QCheckBox(_("Don't show this again."))
         cb_checked = False
@@ -650,13 +650,13 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger):
             self.show_error(_('No donation address for this server'))
 
     def show_about(self):
-        QMessageBox.about(self, "Electrum",
+        QMessageBox.about(self, "Electrum-XZC",
                           (_("Version")+" %s" % ELECTRUM_VERSION + "\n\n" +
-                           _("Electrum's focus is speed, with low resource usage and simplifying Bitcoin.") + " " +
+                           _("Electrum's focus is speed, with low resource usage and simplifying Zcoin.") + " " +
                            _("You do not need to perform regular backups, because your wallet can be "
                               "recovered from a secret phrase that you can memorize or write on paper.") + " " +
                            _("Startup times are instant because it operates in conjunction with high-performance "
-                              "servers that handle the most complicated parts of the Bitcoin system.") + "\n\n" +
+                              "servers that handle the most complicated parts of the Zcoin system.") + "\n\n" +
                            _("Uses icons from the Icons8 icon pack (icons8.com).")))
 
     def show_update_check(self, version=None):
@@ -669,7 +669,7 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger):
             _("Before reporting a bug, upgrade to the most recent version of Electrum (latest release or git HEAD), and include the version number in your report."),
             _("Try to explain not only what the bug is, but how it occurs.")
          ])
-        self.show_message(msg, title="Electrum - " + _("Reporting Bugs"), rich_text=True)
+        self.show_message(msg, title="Electrum-XZC - " + _("Reporting Bugs"), rich_text=True)
 
     def notify_transactions(self):
         if self.tx_notification_queue.qsize() == 0:
@@ -709,9 +709,9 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger):
         if self.tray:
             try:
                 # this requires Qt 5.9
-                self.tray.showMessage("Electrum", message, read_QIcon("electrum_dark_icon"), 20000)
+                self.tray.showMessage("Electrum-XZC", message, read_QIcon("electrum_dark_icon"), 20000)
             except TypeError:
-                self.tray.showMessage("Electrum", message, QSystemTrayIcon.Information, 20000)
+                self.tray.showMessage("Electrum-XZC", message, QSystemTrayIcon.Information, 20000)
 
 
 
@@ -902,7 +902,7 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger):
         self.receive_address_e = ButtonsLineEdit()
         self.receive_address_e.addCopyButton(self.app)
         self.receive_address_e.setReadOnly(True)
-        msg = _('Bitcoin address where the payment should be received. Note that each payment request uses a different Bitcoin address.')
+        msg = _('Zcoin address where the payment should be received. Note that each payment request uses a different Zcoin address.')
         self.receive_address_label = HelpLabel(_('Receiving address'), msg)
         self.receive_address_e.textChanged.connect(self.update_receive_qr)
         self.receive_address_e.textChanged.connect(self.update_receive_address_styling)
@@ -933,7 +933,7 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger):
         msg = ' '.join([
             _('Expiration date of your request.'),
             _('This information is seen by the recipient if you send them a signed payment request.'),
-            _('Expired requests have to be deleted manually from your list, in order to free the corresponding Bitcoin addresses.'),
+            _('Expired requests have to be deleted manually from your list, in order to free the corresponding Zcoin addresses.'),
             _('The bitcoin address never expires and will always be part of this electrum wallet.'),
         ])
         grid.addWidget(HelpLabel(_('Request expires'), msg), 3, 0)
@@ -1176,7 +1176,7 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger):
         self.amount_e = BTCAmountEdit(self.get_decimal_point)
         self.payto_e = PayToEdit(self)
         msg = _('Recipient of the funds.') + '\n\n'\
-              + _('You may enter a Bitcoin address, a label from your list of contacts (a list of completions will be proposed), or an alias (email-like address that forwards to a Bitcoin address)')
+              + _('You may enter a Zcoin address, a label from your list of contacts (a list of completions will be proposed), or an alias (email-like address that forwards to a Zcoin address)')
         payto_label = HelpLabel(_('Pay to'), msg)
         grid.addWidget(payto_label, 1, 0)
         grid.addWidget(self.payto_e, 1, 1, 1, -1)
@@ -1222,7 +1222,7 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger):
         hbox.addStretch(1)
         grid.addLayout(hbox, 4, 4)
 
-        msg = _('Bitcoin transactions are in general not free. A transaction fee is paid by the sender of the funds.') + '\n\n'\
+        msg = _('Zcoin transactions are in general not free. A transaction fee is paid by the sender of the funds.') + '\n\n'\
               + _('The amount of fee can be decided freely by the sender. However, transactions with low fees take more time to be processed.') + '\n\n'\
               + _('A suggested fee is automatically added to this field. You may override it. The suggested fee increases with the size of the transaction.')
         self.fee_e_label = HelpLabel(_('Fee'), msg)
@@ -1626,10 +1626,10 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger):
 
         for o in outputs:
             if o.address is None:
-                self.show_error(_('Bitcoin Address is None'))
+                self.show_error(_('Zcoin Address is None'))
                 return True
             if o.type == TYPE_ADDRESS and not bitcoin.is_address(o.address):
-                self.show_error(_('Invalid Bitcoin Address'))
+                self.show_error(_('Invalid Zcoin Address'))
                 return True
             if o.value is None:
                 self.show_error(_('Invalid Amount'))
@@ -1670,11 +1670,13 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger):
             tx.set_rbf(True)
 
         if fee < self.wallet.relayfee() * tx.estimated_size() / 1000:
-            self.show_error('\n'.join([
-                _("This transaction requires a higher fee, or it will not be propagated by your current server"),
-                _("Try to raise your transaction fee, or use a server with a lower relay fee.")
-            ]))
-            return
+            msgText = '\n'.join([
+                _("Your current server requires a higher fee to successfully propagate this transaction."),
+                _("It is recomended to raise your transaction fee or use a server with a lower relay fee."),
+                _("Try sending the transaction with the current fee?")
+            ])
+            if not self.question(msgText):
+                return
 
         if preview:
             self.show_transaction(tx, tx_desc)
@@ -2078,7 +2080,7 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger):
             'plugins': self.gui_object.plugins,
             'window': self,
             'config': self.config,
-            'electrum': electrum,
+            'electrum_xzc': electrum_xzc,
             'daemon': self.gui_object.daemon,
             'util': util,
             'bitcoin': bitcoin,
@@ -2137,7 +2139,7 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger):
         self.send_button.setVisible(not self.wallet.is_watching_only())
 
     def change_password_dialog(self):
-        from electrum.storage import STO_EV_XPUB_PW
+        from electrum_xzc.storage import STO_EV_XPUB_PW
         if self.wallet.get_available_storage_encryption_version() == STO_EV_XPUB_PW:
             from .password_dialog import ChangePasswordDialogForHW
             d = ChangePasswordDialogForHW(self, self.wallet)
@@ -2340,7 +2342,7 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger):
         address  = address.text().strip()
         message = message.toPlainText().strip()
         if not bitcoin.is_address(address):
-            self.show_message(_('Invalid Bitcoin address.'))
+            self.show_message(_('Invalid Zcoin address.'))
             return
         if self.wallet.is_watching_only():
             self.show_message(_('This is a watching-only wallet.'))
@@ -2368,7 +2370,7 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger):
         address  = address.text().strip()
         message = message.toPlainText().strip().encode('utf-8')
         if not bitcoin.is_address(address):
-            self.show_message(_('Invalid Bitcoin address.'))
+            self.show_message(_('Invalid Zcoin address.'))
             return
         try:
             # This can throw on invalid base64
@@ -2497,7 +2499,7 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger):
         return d.run()
 
     def tx_from_text(self, txt):
-        from electrum.transaction import tx_from_str
+        from electrum_xzc.transaction import tx_from_str
         try:
             tx = tx_from_str(txt)
             return Transaction(tx)
@@ -2506,7 +2508,7 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger):
             return
 
     def read_tx_from_qrcode(self):
-        from electrum import qrscanner
+        from electrum_xzc import qrscanner
         try:
             data = qrscanner.scan_barcode(self.config.get_video_device())
         except BaseException as e:
@@ -2515,7 +2517,7 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger):
         if not data:
             return
         # if the user scanned a bitcoin URI
-        if str(data).startswith("bitcoin:"):
+        if str(data).startswith("zcoin:"):
             self.pay_to_URI(data)
             return
         # else if the user scanned an offline signed tx
@@ -2555,7 +2557,7 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger):
             self.show_transaction(tx)
 
     def do_process_from_txid(self):
-        from electrum import transaction
+        from electrum_xzc import transaction
         txid, ok = QInputDialog.getText(self, _('Lookup transaction'), _('Transaction ID') + ':')
         if ok and txid:
             txid = str(txid).strip()
@@ -2822,7 +2824,7 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger):
         lang_help = _('Select which language is used in the GUI (after restart).')
         lang_label = HelpLabel(_('Language') + ':', lang_help)
         lang_combo = QComboBox()
-        from electrum.i18n import languages
+        from electrum_xzc.i18n import languages
         lang_combo.addItems(list(languages.values()))
         lang_keys = list(languages.keys())
         lang_cur_setting = self.config.get("language", '')
@@ -2996,7 +2998,7 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger):
         block_ex_combo.currentIndexChanged.connect(on_be)
         gui_widgets.append((block_ex_label, block_ex_combo))
 
-        from electrum import qrscanner
+        from electrum_xzc import qrscanner
         system_cameras = qrscanner._find_system_cameras()
         qr_combo = QComboBox()
         qr_combo.addItem("Default","default")

@@ -412,6 +412,8 @@ class Interface(Logger):
         # use lower timeout as we usually have network.bhi_lock here
         timeout = self.network.get_network_timeout_seconds(NetworkTimeout.Urgent)
         res = await self.session.send_request('blockchain.block.header', [height], timeout=timeout)
+        if type(res) is dict:
+            return blockchain.deserialize_header(bytes.fromhex(res['header']), height)
         return blockchain.deserialize_header(bytes.fromhex(res), height)
 
     async def request_chunk(self, height, tip=None, *, can_return_early=False):
@@ -618,7 +620,7 @@ class Interface(Logger):
         forkfun = self.blockchain.fork if 'mock' not in bad_header else bad_header['mock']['fork']
         b = forkfun(bad_header)  # type: Blockchain
         self.blockchain = b
-        assert b.forkpoint == bad
+        assert b.forkpoint <= bad
         return 'fork', height
 
     async def _search_headers_backwards(self, height, header):

@@ -68,7 +68,7 @@ class Plugins(DaemonThread):
 
     def load_plugins(self):
         for loader, name, ispkg in pkgutil.iter_modules([self.pkgpath]):
-            full_name = f'electrum.plugins.{name}'
+            full_name = f'electrum_xzc.plugins.{name}'
             spec = importlib.util.find_spec(full_name)
             if spec is None:  # pkgutil found it but importlib can't ?!
                 raise Exception(f"Error pre-loading {full_name}: no spec")
@@ -106,7 +106,7 @@ class Plugins(DaemonThread):
     def load_plugin(self, name):
         if name in self.plugins:
             return self.plugins[name]
-        full_name = f'electrum.plugins.{name}.{self.gui_name}'
+        full_name = f'electrum_xzc.plugins.{name}.{self.gui_name}'
         spec = importlib.util.find_spec(full_name)
         if spec is None:
             raise RuntimeError("%s implementation for %s plugin not found"

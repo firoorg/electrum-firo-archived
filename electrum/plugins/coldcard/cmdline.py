@@ -1,6 +1,6 @@
-from electrum.plugin import hook
-from electrum.util import print_msg, raw_input, print_stderr
-from electrum.logging import get_logger
+from electrum_xzc.plugin import hook
+from electrum_xzc.util import print_msg, raw_input, print_stderr
+from electrum_xzc.logging import get_logger
 
 from .coldcard import ColdcardPlugin
 

@@ -34,11 +34,11 @@ from PyQt5.QtWidgets import (QTreeWidget, QTreeWidgetItem, QMenu, QGridLayout, Q
                              QTabWidget, QWidget, QLabel)
 from PyQt5.QtGui import QFontMetrics
 
-from electrum.i18n import _
-from electrum import constants, blockchain
-from electrum.interface import serialize_server, deserialize_server
-from electrum.network import Network
-from electrum.logging import get_logger
+from electrum_xzc.i18n import _
+from electrum_xzc import constants, blockchain
+from electrum_xzc.interface import serialize_server, deserialize_server
+from electrum_xzc.network import Network
+from electrum_xzc.logging import get_logger
 
 from .util import Buttons, CloseButton, HelpButton, read_QIcon, char_width_in_lineedit
 

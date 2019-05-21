@@ -7,15 +7,15 @@ from decimal import Decimal
 import getpass
 import logging
 
-import electrum
-from electrum.util import format_satoshis
-from electrum.bitcoin import is_address, COIN, TYPE_ADDRESS
-from electrum.transaction import TxOutput
-from electrum.wallet import Wallet
-from electrum.storage import WalletStorage
-from electrum.network import NetworkParameters, TxBroadcastError, BestEffortRequestFailed
-from electrum.interface import deserialize_server
-from electrum.logging import console_stderr_handler
+import electrum_xzc
+from electrum_xzc.util import format_satoshis
+from electrum_xzc.bitcoin import is_address, COIN, TYPE_ADDRESS
+from electrum_xzc.transaction import TxOutput
+from electrum_xzc.wallet import Wallet
+from electrum_xzc.storage import WalletStorage
+from electrum_xzc.network import NetworkParameters, TxBroadcastError, BestEffortRequestFailed
+from electrum_xzc.interface import deserialize_server
+from electrum_xzc.logging import console_stderr_handler
 
 _ = lambda x:x  # i18n
 
@@ -28,7 +28,7 @@ class ElectrumGui:
         self.network = daemon.network
         storage = WalletStorage(config.get_wallet_path())
         if not storage.file_exists():
-            print("Wallet not found. try 'electrum create'")
+            print("Wallet not found. try 'electrum-xzc create'")
             exit()
         if storage.is_encrypted():
             password = getpass.getpass('Password:', stream=None)

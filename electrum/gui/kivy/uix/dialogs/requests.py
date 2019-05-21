@@ -17,7 +17,7 @@ Builder.load_string('''
     amount: ''
     status: ''
     date: ''
-    icon: 'atlas://electrum/gui/kivy/theming/light/important'
+    icon: 'atlas://electrum_xzc/gui/kivy/theming/light/important'
     Image:
         id: icon
         source: root.icon
@@ -74,16 +74,16 @@ Builder.load_string('''
 ''')
 
 from kivy.properties import BooleanProperty
-from electrum.gui.kivy.i18n import _
-from electrum.util import format_time
-from electrum.paymentrequest import PR_UNPAID, PR_PAID, PR_UNKNOWN, PR_EXPIRED
-from electrum.gui.kivy.uix.context_menu import ContextMenu
+from electrum_xzc.gui.kivy.i18n import _
+from electrum_xzc.util import format_time
+from electrum_xzc.paymentrequest import PR_UNPAID, PR_PAID, PR_UNKNOWN, PR_EXPIRED
+from electrum_xzc.gui.kivy.uix.context_menu import ContextMenu
 
 pr_icon = {
-    PR_UNPAID: 'atlas://electrum/gui/kivy/theming/light/important',
-    PR_UNKNOWN: 'atlas://electrum/gui/kivy/theming/light/important',
-    PR_PAID: 'atlas://electrum/gui/kivy/theming/light/confirmed',
-    PR_EXPIRED: 'atlas://electrum/gui/kivy/theming/light/close'
+    PR_UNPAID: 'atlas://electrum_xzc/gui/kivy/theming/light/important',
+    PR_UNKNOWN: 'atlas://electrum_xzc/gui/kivy/theming/light/important',
+    PR_PAID: 'atlas://electrum_xzc/gui/kivy/theming/light/confirmed',
+    PR_EXPIRED: 'atlas://electrum_xzc/gui/kivy/theming/light/close'
 }
 request_text = {
     PR_UNPAID: _('Pending'),

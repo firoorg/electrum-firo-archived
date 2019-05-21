@@ -38,25 +38,25 @@ from PyQt5.QtWidgets import (QMenu, QHeaderView, QLabel, QMessageBox,
                              QPushButton, QComboBox, QVBoxLayout, QCalendarWidget,
                              QGridLayout)
 
-from electrum.address_synchronizer import TX_HEIGHT_LOCAL
-from electrum.i18n import _
-from electrum.util import (block_explorer_URL, profiler, TxMinedInfo,
+from electrum_xzc.address_synchronizer import TX_HEIGHT_LOCAL
+from electrum_xzc.i18n import _
+from electrum_xzc.util import (block_explorer_URL, profiler, TxMinedInfo,
                            OrderedDictWithIndex, timestamp_to_datetime)
-from electrum.logging import get_logger, Logger
+from electrum_xzc.logging import get_logger, Logger
 
 from .util import (read_QIcon, MONOSPACE_FONT, Buttons, CancelButton, OkButton,
                    filename_field, MyTreeView, AcceptFileDragDrop, WindowModalDialog,
                    CloseButton, webopen)
 
 if TYPE_CHECKING:
-    from electrum.wallet import Abstract_Wallet
+    from electrum_xzc.wallet import Abstract_Wallet
 
 
 _logger = get_logger(__name__)
 
 
 try:
-    from electrum.plot import plot_history, NothingToPlotException
+    from electrum_xzc.plot import plot_history, NothingToPlotException
 except:
     _logger.info("could not import electrum.plot. This feature needs matplotlib to be installed.")
     plot_history = None
@@ -693,7 +693,7 @@ class HistoryList(MyTreeView, AcceptFileDragDrop):
                 for line in lines:
                     transaction.writerow(line)
             else:
-                from electrum.util import json_encode
+                from electrum_xzc.util import json_encode
                 f.write(json_encode(txns))
 
     def text_txid_from_coordinate(self, row, col):

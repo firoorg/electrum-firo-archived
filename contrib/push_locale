@@ -13,7 +13,7 @@ except ImportError as e:
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
 os.chdir('..')
 
-cmd = "find electrum -type f -name '*.py' -o -name '*.kv'"
+cmd = "find electrum-xzc -type f -name '*.py' -o -name '*.kv'"
 
 files = subprocess.check_output(cmd, shell=True)
 
@@ -23,9 +23,9 @@ with open("app.fil", "wb") as f:
 print("Found {} files to translate".format(len(files.splitlines())))
 
 # Generate fresh translation template
-if not os.path.exists('electrum/locale'):
-    os.mkdir('electrum/locale')
-cmd = 'xgettext -s --from-code UTF-8 --language Python --no-wrap -f app.fil --output=electrum/locale/messages.pot'
+if not os.path.exists('electrum-xzc/locale'):
+    os.mkdir('electrum-xzc/locale')
+cmd = 'xgettext -s --from-code UTF-8 --language Python --no-wrap -f app.fil --output=electrum-xzc/locale/messages.pot'
 print('Generate template')
 os.system(cmd)
 
@@ -56,4 +56,3 @@ if crowdin_api_key:
     print('Build translations')
     response = requests.request('GET', 'https://api.crowdin.com/api/project/' + crowdin_identifier + '/export?key=' + crowdin_api_key)
     print("", "export:", "-" * 20, response.text, "-" * 20, sep="\n")
-

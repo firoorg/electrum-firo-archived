@@ -15,22 +15,22 @@ import struct
 import sys
 import time
 
-from electrum.crypto import sha256d, EncodeAES_base64, EncodeAES_bytes, DecodeAES_bytes, hmac_oneshot
-from electrum.bitcoin import (TYPE_ADDRESS, push_script, var_int, public_key_to_p2pkh,
+from electrum_xzc.crypto import sha256d, EncodeAES_base64, EncodeAES_bytes, DecodeAES_bytes, hmac_oneshot
+from electrum_xzc.bitcoin import (TYPE_ADDRESS, push_script, var_int, public_key_to_p2pkh,
                               is_address)
-from electrum.bip32 import BIP32Node
-from electrum import ecc
-from electrum.ecc import msg_magic
-from electrum.wallet import Standard_Wallet
-from electrum import constants
-from electrum.transaction import Transaction
-from electrum.i18n import _
-from electrum.keystore import Hardware_KeyStore
+from electrum_xzc.bip32 import BIP32Node
+from electrum_xzc import ecc
+from electrum_xzc.ecc import msg_magic
+from electrum_xzc.wallet import Standard_Wallet
+from electrum_xzc import constants
+from electrum_xzc.transaction import Transaction
+from electrum_xzc.i18n import _
+from electrum_xzc.keystore import Hardware_KeyStore
 from ..hw_wallet import HW_PluginBase
-from electrum.util import to_string, UserCancelled, UserFacingException
-from electrum.base_wizard import ScriptTypeNotSupported, HWD_SETUP_NEW_WALLET
-from electrum.network import Network
-from electrum.logging import get_logger
+from electrum_xzc.util import to_string, UserCancelled, UserFacingException
+from electrum_xzc.base_wizard import ScriptTypeNotSupported, HWD_SETUP_NEW_WALLET
+from electrum_xzc.network import Network
+from electrum_xzc.logging import get_logger
 
 
 _logger = get_logger(__name__)
