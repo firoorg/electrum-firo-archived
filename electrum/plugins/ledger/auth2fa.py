@@ -13,10 +13,13 @@ from PyQt5.QtCore import QThread, pyqtSignal
 
 from btchip.btchip import BTChipException
 
-from electrum_xzc.i18n import _
-from electrum_xzc.util import print_msg
-from electrum_xzc import constants, bitcoin
 from electrum_xzc.gui.qt.qrcodewidget import QRCodeWidget
+from electrum_xzc.i18n import _
+from electrum_xzc import constants, bitcoin
+from electrum_xzc.logging import get_logger
+
+
+_logger = get_logger(__name__)
 
 
 DEBUG = False
@@ -354,4 +357,5 @@ class LedgerWebSocket(QThread):
 
 def debug_msg(*args):
     if DEBUG:
-        print_msg(*args)        
+        str_ = " ".join([str(item) for item in args])
+        _logger.debug(str_)

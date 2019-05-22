@@ -3,36 +3,36 @@
         "pruning": "-",
         "s": "50002",
         "t": "50001",
-        "version": "1.1"
+        "version": "1.4"
     },
     "electrumx01.zcoin.io": {
         "pruning": "-",
         "s": "50002",
         "t": "50001",
-        "version": "1.1"
+        "version": "1.4"
     },
     "electrumx02.zcoin.io": {
         "pruning": "-",
         "s": "50002",
         "t": "50001",
-        "version": "1.1"
+        "version": "1.4"
     },
     "electrumx03.zcoin.io": {
         "pruning": "-",
         "s": "50002",
         "t": "50001",
-        "version": "1.1"
+        "version": "1.4"
     },
     "51.15.82.184": {
         "pruning": "-",
         "s": "50002",
         "t": "50001",
-        "version": "1.1"
+        "version": "1.4"
     },
     "47.75.76.176": {
         "pruning": "-",
         "s": "50002",
         "t": "50001",
-        "version": "1.1"
+        "version": "1.4"
     }
 }

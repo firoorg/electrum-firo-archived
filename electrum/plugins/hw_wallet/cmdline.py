@@ -1,4 +1,8 @@
-from electrum_xzc.util import print_msg, print_error, raw_input
+from electrum_xzc.util import print_stderr, raw_input
+from electrum_xzc.logging import get_logger
+
+
+_logger = get_logger(__name__)
 
 
 class CmdLineHandler:
@@ -40,7 +44,7 @@ class CmdLineHandler:
         print_stderr(msg)
 
     def update_status(self, b):
-        print_error('hw device status', b)
+        _logger.info(f'hw device status {b}')
 
     def finished(self):
         pass
