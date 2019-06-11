@@ -474,6 +474,8 @@ class Blockchain(Logger):
             f.seek(delta)
             hdrSz = constants.net.COIN.get_header_size_height(height)
             h = f.read(hdrSz)
+            if len(h) == 0:
+                raise MissingHeader('Header is missing')
             if len(h) < hdrSz:
                 raise Exception('Expected to read a full header. This was only {} bytes'.format(len(h)))
         if h == bytes([0])*hdrSz:
