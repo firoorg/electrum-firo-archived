@@ -599,7 +599,7 @@ class Interface(Logger):
         forkfun = self.blockchain.fork if 'mock' not in bad_header else bad_header['mock']['fork']
         b = forkfun(bad_header)  # type: Blockchain
         self.blockchain = b
-        assert b.forkpoint == bad
+        assert b.forkpoint <= bad
         return 'fork', height
 
     async def _search_headers_backwards(self, height, header):

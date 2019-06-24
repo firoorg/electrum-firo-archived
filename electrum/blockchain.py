@@ -139,7 +139,11 @@ def read_blockchains(config: 'SimpleConfig'):
                        forkpoint_hash=first_hash,
                        prev_hash=prev_hash)
         # consistency checks
-        h = b.read_header(b.forkpoint)
+        try:
+            h = b.read_header(b.forkpoint)
+        except:
+            delete_chain(filename, "Cannot read the fork")
+            return;
         if first_hash != hash_header(h):
             delete_chain(filename, "incorrect first hash for chain")
             return
@@ -474,6 +478,8 @@ class Blockchain(Logger):
             f.seek(delta)
             hdrSz = constants.net.COIN.get_header_size_height(height)
             h = f.read(hdrSz)
+            if len(h) == 0:
+                raise MissingHeader('Header is missing')
             if len(h) < hdrSz:
                 raise Exception('Expected to read a full header. This was only {} bytes'.format(len(h)))
         if h == bytes([0])*hdrSz:
