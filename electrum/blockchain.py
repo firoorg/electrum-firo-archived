@@ -139,7 +139,11 @@ def read_blockchains(config: 'SimpleConfig'):
                        forkpoint_hash=first_hash,
                        prev_hash=prev_hash)
         # consistency checks
-        h = b.read_header(b.forkpoint)
+        try:
+            h = b.read_header(b.forkpoint)
+        except:
+            delete_chain(filename, "Cannot read the fork")
+            return;
         if first_hash != hash_header(h):
             delete_chain(filename, "incorrect first hash for chain")
             return
