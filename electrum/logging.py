@@ -60,12 +60,12 @@ def _shorten_name_of_logrecord(record: logging.LogRecord) -> logging.LogRecord:
 
 # enable logs universally (including for other libraries)
 root_logger = logging.getLogger()
-root_logger.setLevel(logging.DEBUG)
+root_logger.setLevel(logging.WARNING)
 
 # log to stderr; by default only WARNING and higher
 console_stderr_handler = logging.StreamHandler(sys.stderr)
 console_stderr_handler.setFormatter(console_formatter)
-console_stderr_handler.setLevel(logging.DEBUG)
+console_stderr_handler.setLevel(logging.WARNING)
 root_logger.addHandler(console_stderr_handler)
 
 # creates a logger specifically for electrum library
