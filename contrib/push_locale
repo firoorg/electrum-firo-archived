@@ -13,7 +13,7 @@ except ImportError as e:
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
 os.chdir('..')
 
-cmd = "find electrum-xzc -type f -name '*.py' -o -name '*.kv'"
+cmd = "find electrum_xzc -type f -name '*.py' -o -name '*.kv'"
 
 files = subprocess.check_output(cmd, shell=True)
 
@@ -23,9 +23,9 @@ with open("app.fil", "wb") as f:
 print("Found {} files to translate".format(len(files.splitlines())))
 
 # Generate fresh translation template
-if not os.path.exists('electrum-xzc/locale'):
-    os.mkdir('electrum-xzc/locale')
-cmd = 'xgettext -s --from-code UTF-8 --language Python --no-wrap -f app.fil --output=electrum-xzc/locale/messages.pot'
+if not os.path.exists('electrum_xzc/locale'):
+    os.mkdir('electrum_xzc/locale')
+cmd = 'xgettext -s --from-code UTF-8 --language Python --no-wrap -f app.fil --output=electrum_xzc/locale/messages.pot'
 print('Generate template')
 os.system(cmd)
 

@@ -2,6 +2,8 @@
 
 NAME_ROOT=electrum-xzc
 
+set -x
+
 # These settings probably don't need any change
 export WINEPREFIX=/opt/wine64
 export WINEDEBUG=-all
@@ -19,7 +21,7 @@ here="$(dirname "$(readlink -e "$0")")"
 
 . "$CONTRIB"/build_tools_util.sh
 
-pushd $WINEPREFIX/drive_c/electrum-xzc
+pushd $WINEPREFIX/drive_c/electrum
 
 VERSION=`git describe --tags --dirty --always`
 info "Last commit: $VERSION"
@@ -47,7 +49,7 @@ $PYTHON -m pip install --no-warn-script-location -r "$CONTRIB"/deterministic-bui
 
 $PYTHON -m pip install --no-warn-script-location -r "$CONTRIB"/deterministic-build/requirements-hw.txt
 
-pushd $WINEPREFIX/drive_c/electrum-xzc
+pushd $WINEPREFIX/drive_c/electrum
 # see https://github.com/pypa/pip/issues/2195 -- pip makes a copy of the entire directory
 info "Pip installing Electrum. This might take a long time if the project folder is large."
 $PYTHON -m pip install --no-warn-script-location .
@@ -115,4 +117,4 @@ EOF
     done
 )
 
-sha256sum dist/electrum*.exe
+sha256sum dist/electrum-xzc*.exe
