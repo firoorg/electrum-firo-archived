@@ -72,6 +72,7 @@ from electrum_xzc.exchange_rate import FxThread
 from electrum_xzc.simple_config import SimpleConfig
 from electrum_xzc.logging import Logger
 from electrum_xzc.paymentrequest import PR_PAID
+from electrum_xzc.masternode_manager import MasternodeManager
 
 from .exception_window import Exception_Hook
 from .amountedit import AmountEdit, BTCAmountEdit, MyLineEdit, FeerateEdit
@@ -88,6 +89,9 @@ from .util import (read_QIcon, ColorScheme, text_dialog, icon_path, WaitingDialo
 from .installwizard import WIF_HELP_TEXT
 from .history_list import HistoryList, HistoryModel
 from .update_checker import UpdateCheck, UpdateCheckThread
+from .masternode_dialog import MasternodeDialog
+from .dash_qt import ExtraPayloadWidget
+from .protx_qt import create_dip3_tab
 
 
 class StatusBarButton(QPushButton):
@@ -123,6 +127,9 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger):
 
     def __init__(self, gui_object, wallet: Abstract_Wallet):
         QMainWindow.__init__(self)
+
+        self.setObjectName("main_window_container")
+        self.masternode_manager = None
 
         self.gui_object = gui_object
         self.config = config = gui_object.config  # type: SimpleConfig
@@ -169,8 +176,10 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger):
         self.receive_tab = self.create_receive_tab()
         self.addresses_tab = self.create_addresses_tab()
         self.utxo_tab = self.create_utxo_tab()
+        self.dip3_tab = create_dip3_tab(self, wallet)
         self.console_tab = self.create_console_tab()
         self.contacts_tab = self.create_contacts_tab()
+        tabs.setObjectName("main_window_nav_bar")
         tabs.addTab(self.create_history_tab(), read_QIcon("tab_history.png"), _('History'))
         tabs.addTab(self.send_tab, read_QIcon("tab_send.png"), _('Send'))
         tabs.addTab(self.receive_tab, read_QIcon("tab_receive.png"), _('Receive'))
@@ -186,6 +195,7 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger):
         add_optional_tab(tabs, self.addresses_tab, read_QIcon("tab_addresses.png"), _("&Addresses"), "addresses")
         add_optional_tab(tabs, self.utxo_tab, read_QIcon("tab_coins.png"), _("Co&ins"), "utxo")
         add_optional_tab(tabs, self.contacts_tab, read_QIcon("tab_contacts.png"), _("Con&tacts"), "contacts")
+        add_optional_tab(tabs, self.dip3_tab, read_QIcon("tab_dip3.png"), _("&DIP3"), "dip3")
         add_optional_tab(tabs, self.console_tab, read_QIcon("tab_console.png"), _("Con&sole"), "console")
 
         tabs.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
@@ -204,6 +214,7 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger):
         QShortcut(QKeySequence("F5"), self, self.update_wallet)
         QShortcut(QKeySequence("Ctrl+PgUp"), self, lambda: wrtabs.setCurrentIndex((wrtabs.currentIndex() - 1)%wrtabs.count()))
         QShortcut(QKeySequence("Ctrl+PgDown"), self, lambda: wrtabs.setCurrentIndex((wrtabs.currentIndex() + 1)%wrtabs.count()))
+        QShortcut(QKeySequence("Ctrl+M"), self, self.show_masternode_dialog)
 
         for i in range(wrtabs.count()):
             QShortcut(QKeySequence("Alt+" + str(i + 1)), self, lambda i=i: wrtabs.setCurrentIndex(i))
@@ -215,6 +226,7 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger):
         # network callbacks
         if self.network:
             self.network_signal.connect(self.on_network_qt)
+            self.gui_object.dash_net_sobj.main.connect(self.on_dash_net_qt)
             interests = ['wallet_updated', 'network_updated', 'blockchain_updated',
                          'new_transaction', 'status',
                          'banner', 'verified', 'fee', 'fee_histogram']
@@ -229,6 +241,12 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger):
             self.network.register_callback(self.on_history, ['on_history'])
             self.new_fx_quotes_signal.connect(self.on_fx_quotes)
             self.new_fx_history_signal.connect(self.on_fx_history)
+
+            # dash net callbacks
+            self.network.dash_net.register_callback(self.on_dash_net,
+                                                    ['dash-net-updated',
+                                                     'dash-peers-updated'])
+            self.update_dash_net_status_btn()
 
         # update fee slider in case we missed the callback
         self.fee_slider.update()
@@ -369,6 +387,17 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger):
         else:
             self.logger.info(f"unexpected network message: {event} {args}")
 
+    def on_dash_net(self, event, *args):
+        self.gui_object.dash_net_sobj.main.emit(event, args)
+
+    def on_dash_net_qt(self, event, args=None):
+        self.update_dash_net_status_btn()
+
+    def update_dash_net_status_btn(self):
+        net = self.network
+        icon = (net.dash_net.status_icon() if net else 'dash_net_off.png')
+        self.dash_net_button.setIcon(read_QIcon(icon))
+
     def on_network_qt(self, event, args=None):
         # Handle a network message in the GUI thread
         if event == 'status':
@@ -411,6 +440,9 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger):
     @profiler
     def load_wallet(self, wallet):
         wallet.thread = TaskThread(self, self.on_error)
+        self.masternode_manager = MasternodeManager(self.wallet, self.config)
+        self.dip3_tab.w_model.reload_data()
+        self.dip3_tab.update_wallet_label()
         self.update_recently_visited(wallet.storage.path)
         self.need_update.set()
         # Once GUI has been initialized check if we want to announce something since the callback has been called before the GUI was initialized
@@ -606,7 +638,11 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger):
         add_toggle_action(view_menu, self.addresses_tab)
         add_toggle_action(view_menu, self.utxo_tab)
         add_toggle_action(view_menu, self.contacts_tab)
+        add_toggle_action(view_menu, self.dip3_tab)
         add_toggle_action(view_menu, self.console_tab)
+
+        wallet_menu.addSeparator()
+        wallet_menu.addAction(_("Znodes"), self.show_masternode_dialog)
 
         tools_menu = menubar.addMenu(_("&Tools"))
 
@@ -814,6 +850,7 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger):
             icon = read_QIcon("status_disconnected.png")
 
         elif self.network.is_connected():
+            self.masternode_manager.send_subscriptions()
             server_height = self.network.get_server_height()
             server_lag = self.network.get_local_height() - server_height
             fork_str = "_fork" if len(self.network.get_blockchains())>1 else ""
@@ -878,6 +915,7 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger):
         self.history_list = l = HistoryList(self, self.history_model)
         self.history_model.set_view(self.history_list)
         l.searchable_list = l
+        l.setObjectName("history_container")
         toolbar = l.create_toolbar(self.config)
         toolbar_shown = self.config.get('show_toolbar_history', False)
         l.show_toolbar(toolbar_shown)
@@ -976,6 +1014,7 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger):
         hbox.addWidget(self.receive_qr)
 
         w = QWidget()
+        w.setObjectName("receive_container")
         w.searchable_list = self.request_list
         vbox = QVBoxLayout(w)
         vbox.addLayout(hbox)
@@ -1392,6 +1431,7 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger):
         hbox = QHBoxLayout()
         hbox.addLayout(vbox0)
         w = QWidget()
+        w.setObjectName("send_container")
         vbox = QVBoxLayout(w)
         vbox.addLayout(hbox)
         vbox.addStretch(1)
@@ -1933,6 +1973,7 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger):
     def create_addresses_tab(self):
         from .address_list import AddressList
         self.address_list = l = AddressList(self)
+        l.setObjectName("addresses_container")
         toolbar = l.create_toolbar(self.config)
         toolbar_shown = self.config.get('show_toolbar_addresses', False)
         l.show_toolbar(toolbar_shown)
@@ -1941,11 +1982,13 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger):
     def create_utxo_tab(self):
         from .utxo_list import UTXOList
         self.utxo_list = l = UTXOList(self)
+        l.setObjectName("utxo_container")
         return self.create_list_tab(l)
 
     def create_contacts_tab(self):
         from .contact_list import ContactList
         self.contact_list = l = ContactList(self)
+        l.setObjectName("contacts_container")
         return self.create_list_tab(l)
 
     def remove_address(self, addr):
@@ -2067,6 +2110,7 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger):
     def create_console_tab(self):
         from .console import Console
         self.console = console = Console()
+        console.setObjectName("console_container")
         return console
 
     def update_console(self):
@@ -2102,6 +2146,7 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger):
         sb.setFixedHeight(35)
 
         self.balance_label = QLabel("Loading wallet...")
+        self.balance_label.setObjectName("main_window_balance")
         self.balance_label.setTextInteractionFlags(Qt.TextSelectableByMouse)
         self.balance_label.setStyleSheet("""QLabel { padding: 0 }""")
         sb.addWidget(self.balance_label)
@@ -2126,6 +2171,9 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger):
         sb.addPermanentWidget(self.seed_button)
         self.status_button = StatusBarButton(read_QIcon("status_disconnected.png"), _("Network"), lambda: self.gui_object.show_network_dialog(self))
         sb.addPermanentWidget(self.status_button)
+        self.dash_net_button = StatusBarButton(read_QIcon('dash_net_0.png'), _("Dash Network"), lambda: self.gui_object.show_dash_net_dialog(self))
+        self.update_dash_net_status_btn()
+        sb.addPermanentWidget(self.dash_net_button)
         run_hook('create_status_bar', sb)
         self.setStatusBar(sb)
 
@@ -2815,6 +2863,7 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger):
         d = WindowModalDialog(self, _('Preferences'))
         vbox = QVBoxLayout()
         tabs = QTabWidget()
+        tabs.setObjectName("settings_tab")
         gui_widgets = []
         fee_widgets = []
         tx_widgets = []
@@ -3264,6 +3313,8 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger):
             self.network.unregister_callback(self.on_network)
             self.network.unregister_callback(self.on_quotes)
             self.network.unregister_callback(self.on_history)
+            self.wallet.protx_manager.clean_up()
+            self.network.dash_net.unregister_callback(self.on_dash_net)
         self.config.set_key("is_maximized", self.isMaximized())
         if not self.isMaximized():
             g = self.geometry()
@@ -3484,3 +3535,13 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger):
                      "to see it, you need to broadcast it."))
             win.msg_box(QPixmap(icon_path("offline_tx.png")), None, _('Success'), msg)
             return True
+
+    def show_masternode_dialog(self):
+        d = MasternodeDialog(self.masternode_manager, self)
+        d.exec_()
+
+    def proposals_changed(self):
+        """Callback for when proposals change."""
+        if not self.masternode_manager:
+            return
+        self.update_proposals_tab()
