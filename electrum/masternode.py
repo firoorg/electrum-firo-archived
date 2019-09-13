@@ -59,11 +59,8 @@ class NetworkAddress(object):
 class MasternodePing(object):
     """A masternode ping message."""
     @classmethod
-    def deserialize(cls, vds, protocol_version=70208):
-        if protocol_version <= 70208:
-            vin = parse_input(vds, full_parse=True)
-        else:
-            vin = parse_outpoint(vds)
+    def deserialize(cls, vds, protocol_version=90026):
+        vin = parse_input(vds, full_parse=True)
 
         block_hash = hash_encode(vds.read_bytes(32))
         sig_time = vds.read_int64()
@@ -92,7 +89,7 @@ class MasternodePing(object):
         return cls(**kwargs)
 
     def __init__(self, vin=None, block_hash='', sig_time=0, sig='',
-                 protocol_version=70208):
+                 protocol_version=90026):
         if vin is None:
             vin = {'prevout_hash':'', 'prevout_n': 0, 'scriptSig': '', 'sequence':0xffffffff}
         else:
@@ -106,10 +103,7 @@ class MasternodePing(object):
     def serialize(self, vds=None):
         if not vds:
             vds = BCDataStream()
-        if self.protocol_version <= 70208:
-            serialize_input(vds, self.vin)
-        else:
-            serialize_outpoint(vds, self.vin)
+        serialize_input(vds, self.vin)
         vds.write(hash_decode(self.block_hash))
         vds.write_int64(self.sig_time)
         vds.write_string(self.sig)
@@ -200,7 +194,7 @@ class MasternodeAnnounce(object):
     """
     def __init__(self, alias='', vin=None, addr=NetworkAddress(),
                  collateral_key='', delegate_key='', sig='', sig_time=0,
-                 protocol_version=70208, last_ping=MasternodePing(),
+                 protocol_version=90026, last_ping=MasternodePing(),
                  announced=False):
         self.alias = alias
         if vin is None:
@@ -277,10 +271,7 @@ class MasternodeAnnounce(object):
     def serialize(self, vds=None):
         if not vds:
             vds = BCDataStream()
-        if self.protocol_version <= 70208:
-            serialize_input(vds, self.vin)
-        else:
-            serialize_outpoint(vds, self.vin)
+        serialize_input(vds, self.vin)
         self.addr.serialize(vds)
         vds.write_string(bfh(self.collateral_key))
         vds.write_string(bfh(self.delegate_key))
