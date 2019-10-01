@@ -112,17 +112,19 @@ class MasternodeManager(object):
     def subscribe_to_masternodes(self):
         for mn in self.masternodes:
             collateral = mn.get_collateral_str()
-            if not '-' in collateral or len(collateral.split('-')[0]) != 64:
+            collateral_components = collateral.split('-')
+            if not '-' in collateral or len(collateral_components[0]) != 64:
                 continue
             if self.masternode_statuses.get(collateral) is None:
                 network = self.wallet.network
                 method = network.interface.session.send_request
-                request = ('masternode.subscribe', [collateral])
+                collateral_filter = 'COutPoint('+collateral_components[0]+', '+collateral_components[1]+')'
+                request = ('masternode.subscribe', [collateral_filter])
                 async def update_collateral_status():
                     self.masternode_statuses[collateral] = ''
                     try:
                         res = await method(*request)
-                        response = {'params': request[1], 'result': res}
+                        response = {'params': [collateral], 'result': res}
                         self.masternode_subscription_response(response)
                     except Exception as e:
                         _logger.info(f'subscribe_to_masternodes: {repr(e)}')
@@ -232,7 +234,7 @@ class MasternodeManager(object):
                             (MASTERNODE_MIN_CONFIRMATIONS, tx_height.conf))
         # Ensure that the masternode's vin is valid.
         if mn.vin.get('value', 0) != bitcoin.COIN * 1000:
-            raise Exception('Masternode requires a collateral 1000 DASH output.')
+            raise Exception('Znode requires a collateral 1000 XZC output.')
 
         # If the masternode has been announced, it can be announced again if it has been disabled.
         if mn.announced:

@@ -25,6 +25,7 @@ def masternode_status(status):
         'EXPIRED': (False, _('Disabled'), _('Znode failed to ping the network and was disabled.')),
         'VIN_SPENT': (False, _('Disabled'), _('Collateral payment has been spent.')),
         'REMOVE': (False, _('Disabled'), _('Znode failed to ping the network and was disabled.')),
+        'NEW_START_REQUIRED': (False, _('Disabled'), _('Znode failed to ping the network and was disabled.')),
     }
     if statuses.get(status):
         return statuses[status]
@@ -286,8 +287,8 @@ class MasternodeOutputsTab(QWidget):
 
         vbox = QVBoxLayout()
 
-        desc = ' '.join(['Use this tab to scan for and choose a collateral payment for your masternode.',
-            'A valid collateral payment is exactly 1000 DASH.'])
+        desc = ' '.join(['Use this tab to scan for and choose a collateral payment for your znode.',
+            'A valid collateral payment is exactly 1000 XZC.'])
         desc = QLabel(_(desc))
         desc.setWordWrap(True)
         vbox.addWidget(desc)
@@ -322,7 +323,7 @@ class MasternodeOutputsTab(QWidget):
         if len(coins) > 0:
             self.valid_outputs_list.add_outputs(coins)
         else:
-            self.status_edit.setText(_('No 1000 DASH outputs were found.'))
+            self.status_edit.setText(_('No 1000 XZC outputs were found.'))
             self.status_edit.setStyleSheet(util.ColorScheme.RED.as_stylesheet())
 
     def set_output(self, vin):
@@ -384,7 +385,7 @@ class SignAnnounceWidget(QWidget):
         self.mapper.addMapping(self.collateral_edit, model.VIN, b'string')
         self.mapper.addMapping(self.delegate_edit, model.DELEGATE)
 
-        self.sign_button = QPushButton(_('Activate Masternode'))
+        self.sign_button = QPushButton(_('Activate znode'))
         self.sign_button.setEnabled(False)
         self.sign_button.clicked.connect(self.sign_announce)
 

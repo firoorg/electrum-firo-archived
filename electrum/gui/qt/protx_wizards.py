@@ -959,7 +959,7 @@ class CollateralWizardPage(QWizardPage):
         self.frozen_cb = QCheckBox('Include frozen addresses')
         self.frozen_cb.setChecked(False)
         self.frozen_cb.stateChanged.connect(self.frozen_state_changed)
-        self.not_found = QLabel('No 1000 DASH outputs were found.')
+        self.not_found = QLabel('No 1000 XZC outputs were found.')
         self.not_found.setObjectName('err-label')
         self.not_found.hide()
 
