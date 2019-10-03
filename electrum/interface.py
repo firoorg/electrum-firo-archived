@@ -86,8 +86,6 @@ class NotificationSession(RPCSession):
 
     async def handle_request(self, request):
         self.maybe_log(f"--> {request}")
-        if request.method == 'masternode.subscribe':
-            return
         try:
             if isinstance(request, Notification):
                 params, result = request.args[:-1], request.args[-1]

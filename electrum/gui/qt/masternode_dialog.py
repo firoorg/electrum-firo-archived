@@ -268,6 +268,14 @@ class MasternodesWidget(QWidget):
     def import_masternode_conf_lines(self, conf_lines, pw):
         return self.model.import_masternode_conf_lines(conf_lines, pw)
 
+    def showEvent(self, event):
+        self.manager.subscribe_to_masternodes()
+        event.accept()
+
+    def hideEvent(self, event):
+        self.manager.unsubscribe_from_masternodes()
+        event.accept()
+
 class MasternodeDialog(QDialog, util.MessageBoxMixin, Logger):
     """GUI for managing masternodes."""
     diff_updated = pyqtSignal(int)

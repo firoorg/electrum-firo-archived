@@ -11,6 +11,7 @@ from .masternode_budget import BudgetProposal, BudgetVote
 from .util import AlreadyHaveAddress, bfh
 from .util import format_satoshis_plain
 from .logging import get_logger
+import asyncio
 
 
 _logger = get_logger(__name__)
@@ -93,7 +94,9 @@ class MasternodeManager(object):
         self.config = config
         # Subscribed masternode statuses.
         self.masternode_statuses = {}
-
+        self.masternode_queue = asyncio.Queue()
+        self.stop_work = False
+        self.worker_thread = threading.Thread
         self.load()
 
     def load(self):
@@ -107,28 +110,42 @@ class MasternodeManager(object):
     def send_subscriptions(self):
         if not self.wallet.network.is_connected():
             return
-        self.subscribe_to_masternodes()
+
+    def unsubscribe_from_masternodes(self):
+        network = self.wallet.network
+        network.interface.session.unsubscribe(self.masternode_queue)
+        self.stop_work = True
+        self.worker_thread.join()
 
     def subscribe_to_masternodes(self):
-        for mn in self.masternodes:
-            collateral = mn.get_collateral_str()
-            collateral_components = collateral.split('-')
-            if not '-' in collateral or len(collateral_components[0]) != 64:
-                continue
-            if self.masternode_statuses.get(collateral) is None:
-                network = self.wallet.network
-                method = network.interface.session.send_request
-                collateral_filter = 'COutPoint('+collateral_components[0]+', '+collateral_components[1]+')'
-                request = ('masternode.subscribe', [collateral_filter])
-                async def update_collateral_status():
-                    self.masternode_statuses[collateral] = ''
-                    try:
-                        res = await method(*request)
-                        response = {'params': [collateral], 'result': res}
-                        self.masternode_subscription_response(response)
-                    except Exception as e:
-                        _logger.info(f'subscribe_to_masternodes: {repr(e)}')
-                network.run_from_another_thread(update_collateral_status())
+        self.stop_work = False
+        self.worker_thread = threading.Thread(target=self.subscribe_to_masternodes_int)
+        self.worker_thread.start()
+
+    def subscribe_to_masternodes_int(self):
+        network = self.wallet.network
+        async def do_subscribe():
+            for mn in self.masternodes:
+                collateral = mn.get_collateral_str()
+                collateral_components = collateral.split('-')
+                if not '-' in collateral or len(collateral_components[0]) != 64:
+                    continue
+                if self.masternode_statuses.get(collateral) is None:
+                    collateral_filter = 'COutPoint('+collateral_components[0]+', '+collateral_components[1]+')'
+                    await network.interface.session.subscribe('masternode.subscribe', [collateral_filter], self.masternode_queue)
+
+        network.run_from_another_thread(do_subscribe())
+
+        while not self.stop_work:
+            try:
+                mn_status_coro = self.masternode_queue.get()
+                mn_status_fut = asyncio.run_coroutine_threadsafe(mn_status_coro, network.asyncio_loop)
+                result = mn_status_fut.result(0.01)
+                print(result)
+                self.masternode_subscription_response(result)
+            except asyncio.TimeoutError:
+                if self.stop_work:
+                    return
 
     def get_masternode(self, alias):
         """Get the masternode labelled as alias."""
@@ -578,7 +595,8 @@ class MasternodeManager(object):
 
     def masternode_subscription_response(self, response):
         """Callback for when a masternode's status changes."""
-        collateral = response['params'][0]
+        collateral = response[0][10:74] + '-' + response[0][76:-1]
+
         mn = None
         for masternode in self.masternodes:
             if masternode.get_collateral_str() == collateral:
@@ -588,10 +606,7 @@ class MasternodeManager(object):
         if not mn:
             return
 
-        if not 'result' in response:
-            return
-
-        status = response['result']
+        status = response[1]
         if status is None:
             status = False
         _logger.info(f'Received updated status for masternode '

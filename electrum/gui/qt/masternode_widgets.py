@@ -179,26 +179,26 @@ class MasternodeEditor(QWidget):
         super(MasternodeEditor, self).__init__(parent)
 
         self.alias_edit = QLineEdit()
-        self.alias_edit.setPlaceholderText(_('Enter a name for this masternode'))
+        self.alias_edit.setPlaceholderText(_('Enter a name for this znode'))
 
         self.vin_edit = PrevOutWidget()
 
         self.addr_edit = NetworkAddressWidget()
         self.delegate_key_edit = QLineEdit()
         self.delegate_key_edit.setFont(QFont(util.MONOSPACE_FONT))
-        self.delegate_key_edit.setPlaceholderText(_('Your masternode\'s private key'))
+        self.delegate_key_edit.setPlaceholderText(_('Your znode\'s private key'))
         self.protocol_version_edit = QLineEdit()
         self.protocol_version_edit.setText('70201')
 
         self.status_edit = QLineEdit()
-        self.status_edit.setPlaceholderText(_('Masternode status'))
+        self.status_edit.setPlaceholderText(_('Znode status'))
         self.status_edit.setReadOnly(True)
 
         form = QFormLayout()
         form.addRow(_('Alias:'), self.alias_edit)
         form.addRow(_('Status:'), self.status_edit)
-        form.addRow(_('Collateral DASH Output:'), self.vin_edit)
-        form.addRow(_('Masternode Private Key:'), self.delegate_key_edit)
+        form.addRow(_('Collateral XZC Output:'), self.vin_edit)
+        form.addRow(_('Znode Private Key:'), self.delegate_key_edit)
         form.addRow(_('Address:'), self.addr_edit)
         form.addRow(_('Protocol Version:'), self.protocol_version_edit)
 
@@ -259,7 +259,7 @@ class MasternodeOutputsTab(QWidget):
 
         include_frozen_checkbox = QCheckBox(_('Include frozen addresses'))
         include_frozen_checkbox.setChecked(False)
-        self.scan_outputs_button = QPushButton(_('Scan For Masternode Outputs'))
+        self.scan_outputs_button = QPushButton(_('Scan For Znode Outputs'))
         def on_scan_outputs():
             """Call scan_for_outputs() with whether to include frozen addresses."""
             self.scan_for_outputs(include_frozen_checkbox.isChecked())
@@ -301,7 +301,7 @@ class MasternodeOutputsTab(QWidget):
 
         valid_outputs_box = QVBoxLayout()
         valid_outputs_box.setContentsMargins(0, 0, 0, 0)
-        valid_outputs_box.addWidget(QLabel(_('Masternode Outputs:')))
+        valid_outputs_box.addWidget(QLabel(_('Znode Outputs:')))
         valid_outputs_box.addWidget(self.valid_outputs_list)
 
         vbox.addLayout(util.Buttons(include_frozen_checkbox, self.scan_outputs_button))
@@ -345,13 +345,13 @@ class MasternodeOutputsTab(QWidget):
         self.mapper.setCurrentIndex(row)
         mn = self.dialog.masternodes_widget.masternode_for_row(row)
 
-        status_text = _('Masternode has no collateral payment assigned.')
+        status_text = _('Znode has no collateral payment assigned.')
         can_scan = not mn.announced
         # Disable the scan_outputs button if the masternode already has an assigned output.
         if mn.vin.get('value', 0) == COIN * 1000:
             can_scan = False
             self.valid_outputs_list.add_output(mn.vin)
-            status_text = _('Masternode already has a collateral payment.')
+            status_text = _('Znode already has a collateral payment.')
 
         self.status_edit.setText(_(status_text))
 
@@ -399,8 +399,8 @@ class SignAnnounceWidget(QWidget):
 
         form = QFormLayout()
         form.addRow(_('Alias:'), self.alias_edit)
-        form.addRow(_('Collateral DASH Output:'), self.collateral_edit)
-        form.addRow(_('Masternode Private Key:'), self.delegate_edit)
+        form.addRow(_('Collateral XZC Output:'), self.collateral_edit)
+        form.addRow(_('Znode Private Key:'), self.delegate_edit)
         vbox.addLayout(form)
         vbox.addLayout(util.Buttons(self.sign_button))
         self.setLayout(vbox)
