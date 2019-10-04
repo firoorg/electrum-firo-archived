@@ -303,12 +303,13 @@ class MasternodeDialog(QDialog, util.MessageBoxMixin, Logger):
         self.mn_status_updater = QTimer(self)
         self.mn_status_updater.timeout.connect(self.mn_status_update)
         self.mn_status_updater.start(1000)
-        self.mn_statuses = self.manager.masternode_statuses
+        self.mn_statuses = {}
 
     def closeEvent(self, event):
         mn_list = self.gui.dip3_tab.mn_list
         if mn_list:
             mn_list.unregister_callback(self.on_mn_list_diff_updated)
+        self.mn_status_updater.stop()
 
     def on_mn_list_diff_updated(self, key, value):
         self.diff_updated.emit(value.get('state'))
@@ -702,11 +703,10 @@ class MasternodeDialog(QDialog, util.MessageBoxMixin, Logger):
 
     def mn_status_update(self):
         new_mn_stats = self.manager.masternode_statuses
-        for mn_col, mn_stat in new_mn_stats.items():
-            if self.mn_statuses.get(mn_col) != mn_stat:
-                index = self.masternodes_widget.model.index(1, 0)
-                self.masternodes_widget.model.dataChanged.emit(index, index)
-                status = self.selected_masternode_status()
-                self.masternode_editor.status_edit.setText(masternode_status(status)[2])
+        if new_mn_stats != self.mn_statuses:
+            index = self.masternodes_widget.model.index(0, 0)
+            self.masternodes_widget.model.dataChanged.emit(index, index)
+            status = self.selected_masternode_status()
+            self.masternode_editor.status_edit.setText(masternode_status(status)[2])
         self.mn_statuses = new_mn_stats
 
