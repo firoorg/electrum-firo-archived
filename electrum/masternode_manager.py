@@ -116,6 +116,8 @@ class MasternodeManager(object):
         network.interface.session.unsubscribe(self.masternode_queue)
         self.stop_work = True
         self.worker_thread.join()
+        for mn in self.masternodes:
+            self.masternode_statuses[mn.get_collateral_str()] = None
 
     def subscribe_to_masternodes(self):
         self.stop_work = False
@@ -137,15 +139,17 @@ class MasternodeManager(object):
         network.run_from_another_thread(do_subscribe())
 
         while not self.stop_work:
-            try:
-                mn_status_coro = self.masternode_queue.get()
-                mn_status_fut = asyncio.run_coroutine_threadsafe(mn_status_coro, network.asyncio_loop)
-                result = mn_status_fut.result(0.01)
-                print(result)
-                self.masternode_subscription_response(result)
-            except asyncio.TimeoutError:
-                if self.stop_work:
-                    return
+            mn_status_coro = self.masternode_queue.get()
+            mn_status_fut = asyncio.run_coroutine_threadsafe(mn_status_coro, network.asyncio_loop)
+
+            while not self.stop_work:
+                try:
+                    result = mn_status_fut.result(0.1)
+                    self.masternode_subscription_response(result)
+                    break
+                except asyncio.TimeoutError:
+                    pass
+
 
     def get_masternode(self, alias):
         """Get the masternode labelled as alias."""
@@ -257,7 +261,7 @@ class MasternodeManager(object):
         if mn.announced:
             status = self.masternode_statuses.get(mn.get_collateral_str())
             if status in ['PRE_ENABLED', 'ENABLED']:
-                raise Exception('Masternode has already been activated')
+                raise Exception('Znode has already been activated')
 
     def save(self):
         """Save masternodes."""

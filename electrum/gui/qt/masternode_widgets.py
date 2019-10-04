@@ -25,7 +25,7 @@ def masternode_status(status):
         'EXPIRED': (False, _('Disabled'), _('Znode failed to ping the network and was disabled.')),
         'VIN_SPENT': (False, _('Disabled'), _('Collateral payment has been spent.')),
         'REMOVE': (False, _('Disabled'), _('Znode failed to ping the network and was disabled.')),
-        'NEW_START_REQUIRED': (False, _('Disabled'), _('Znode failed to ping the network and was disabled.')),
+        'NEW_START_REQUIRED': (False, _('Disabled'), _('Znode requires a new start.')),
     }
     if statuses.get(status):
         return statuses[status]

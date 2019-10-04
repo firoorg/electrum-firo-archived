@@ -398,5 +398,9 @@ class ProTxManager(Logger):
         if not tx:
             return
         conf = tx_mined_status.conf
+
+        if not hasattr(tx, 'tx_type'):
+            return
+
         if tx.tx_type in PROTX_TX_TYPES and tx.extra_payload and conf >= 1:
             tx.extra_payload.after_confirmation(tx, self)

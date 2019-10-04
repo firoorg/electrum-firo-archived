@@ -240,7 +240,7 @@ class DashNet(Logger):
 
     def read_conf(self):
         config = self.config
-        self.run_dash_net = config.get('run_dash_net', True)
+        self.run_dash_net = config.get('run_dash_net', False)
         self.dash_peers = self.config.get('dash_peers', [])
         if self.is_cmd_dash_peers:
             self.use_static_peers = True

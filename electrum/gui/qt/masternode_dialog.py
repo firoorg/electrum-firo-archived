@@ -6,7 +6,7 @@ import traceback
 from PyQt5.QtGui import QBrush, QColor
 from PyQt5.QtCore import (Qt, QVariant, pyqtSignal, pyqtSlot, QSize,
                           QAbstractTableModel, QModelIndex,
-                          QSortFilterProxyModel)
+                          QSortFilterProxyModel, QTimer)
 from PyQt5.QtWidgets import (QWidget, QTableView, QHeaderView,
                              QAbstractItemView, QVBoxLayout, QDialog,
                              QTabWidget, QLabel, QDataWidgetMapper,
@@ -300,6 +300,11 @@ class MasternodeDialog(QDialog, util.MessageBoxMixin, Logger):
                                       ['mn-list-diff-updated'])
         self.diff_updated.connect(self.on_diff_updated)
 
+        self.mn_status_updater = QTimer(self)
+        self.mn_status_updater.timeout.connect(self.mn_status_update)
+        self.mn_status_updater.start(1000)
+        self.mn_statuses = self.manager.masternode_statuses
+
     def closeEvent(self, event):
         mn_list = self.gui.dip3_tab.mn_list
         if mn_list:
@@ -480,6 +485,14 @@ class MasternodeDialog(QDialog, util.MessageBoxMixin, Logger):
         row = self.mapper.currentIndex()
         mn = self.masternodes_widget.masternode_for_row(row)
         return mn
+
+    def selected_masternode_status(self):
+        """Get the currently-selected masternode."""
+        row = self.mapper.currentIndex()
+        mn = self.masternodes_widget.masternode_for_row(row)
+        status = self.manager.masternode_statuses.get(mn.get_collateral_str())
+        return status
+
 
     def delete_current_masternode(self):
         """Delete the masternode that is being viewed."""
@@ -686,3 +699,14 @@ class MasternodeDialog(QDialog, util.MessageBoxMixin, Logger):
         row = self.mapper.currentIndex()
         self.masternodes_widget.populate_collateral_key(row)
         self.update_mappers_index()
+
+    def mn_status_update(self):
+        new_mn_stats = self.manager.masternode_statuses
+        for mn_col, mn_stat in new_mn_stats.items():
+            if self.mn_statuses.get(mn_col) != mn_stat:
+                index = self.masternodes_widget.model.index(1, 0)
+                self.masternodes_widget.model.dataChanged.emit(index, index)
+                status = self.selected_masternode_status()
+                self.masternode_editor.status_edit.setText(masternode_status(status)[2])
+        self.mn_statuses = new_mn_stats
+
