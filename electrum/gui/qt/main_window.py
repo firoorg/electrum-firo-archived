@@ -2172,6 +2172,7 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger):
         self.status_button = StatusBarButton(read_QIcon("status_disconnected.png"), _("Network"), lambda: self.gui_object.show_network_dialog(self))
         sb.addPermanentWidget(self.status_button)
         self.dash_net_button = StatusBarButton(read_QIcon('dash_net_0.png'), _("Dash Network"), lambda: self.gui_object.show_dash_net_dialog(self))
+        self.dash_net_button.hide()
         self.update_dash_net_status_btn()
         sb.addPermanentWidget(self.dash_net_button)
         run_hook('create_status_bar', sb)

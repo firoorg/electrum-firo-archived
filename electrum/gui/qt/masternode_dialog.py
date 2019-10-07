@@ -292,7 +292,6 @@ class MasternodeDialog(QDialog, util.MessageBoxMixin, Logger):
         # Create a default masternode if none are present.
         if len(self.manager.masternodes) == 0:
             self.masternodes_widget.add_masternode(MasternodeAnnounce(alias='default'), save=False)
-        self.masternodes_widget.view.selectRow(0)
 
         mn_list = self.gui.dip3_tab.mn_list
         if mn_list:
@@ -302,8 +301,11 @@ class MasternodeDialog(QDialog, util.MessageBoxMixin, Logger):
 
         self.mn_status_updater = QTimer(self)
         self.mn_status_updater.timeout.connect(self.mn_status_update)
+
+    def showEvent(self, event):
+        self.masternodes_widget.view.selectRow(0)
         self.mn_status_updater.start(1000)
-        self.mn_statuses = {}
+        self.mn_status_update()
 
     def closeEvent(self, event):
         mn_list = self.gui.dip3_tab.mn_list
@@ -702,11 +704,13 @@ class MasternodeDialog(QDialog, util.MessageBoxMixin, Logger):
         self.update_mappers_index()
 
     def mn_status_update(self):
-        new_mn_stats = self.manager.masternode_statuses
-        if new_mn_stats != self.mn_statuses:
-            index = self.masternodes_widget.model.index(0, 0)
-            self.masternodes_widget.model.dataChanged.emit(index, index)
-            status = self.selected_masternode_status()
-            self.masternode_editor.status_edit.setText(masternode_status(status)[2])
-        self.mn_statuses = new_mn_stats
+        for rec_num in range(0, self.masternodes_widget.model.rowCount()):
+            mn = self.masternodes_widget.model.masternodes[rec_num]
+            status_index = self.masternodes_widget.model.index(rec_num, 1)
+            status = self.manager.masternode_statuses.get(mn.get_collateral_str())
+
+            self.masternodes_widget.model.dataChanged.emit(status_index, status_index)
+            if self.masternodes_widget.view.selectedIndexes()[0].row() == rec_num:
+                self.masternode_editor.status_edit.setText(masternode_status(status)[2])
+
 

@@ -96,6 +96,7 @@ class MasternodeManager(object):
         self.masternode_statuses = {}
         self.masternode_queue = asyncio.Queue()
         self.stop_work = False
+        self.restarted = False
         self.worker_thread = threading.Thread
         self.load()
 
@@ -115,12 +116,14 @@ class MasternodeManager(object):
         network = self.wallet.network
         network.interface.session.unsubscribe(self.masternode_queue)
         self.stop_work = True
+        self.restarted = True
         self.worker_thread.join()
-        for mn in self.masternodes:
-            self.masternode_statuses[mn.get_collateral_str()] = None
+        self.masternode_statuses = {}
 
     def subscribe_to_masternodes(self):
         self.stop_work = False
+        self.masternode_statuses = {}
+        self.masternode_queue.empty()
         self.worker_thread = threading.Thread(target=self.subscribe_to_masternodes_int)
         self.worker_thread.start()
 
@@ -138,6 +141,7 @@ class MasternodeManager(object):
 
         network.run_from_another_thread(do_subscribe())
 
+        first_in = True
         while not self.stop_work:
             mn_status_coro = self.masternode_queue.get()
             mn_status_fut = asyncio.run_coroutine_threadsafe(mn_status_coro, network.asyncio_loop)
@@ -145,7 +149,11 @@ class MasternodeManager(object):
             while not self.stop_work:
                 try:
                     result = mn_status_fut.result(0.1)
-                    self.masternode_subscription_response(result)
+                    if first_in and self.restarted:
+                        pass
+                    else:
+                        self.masternode_subscription_response(result)
+                    first_in = False
                     break
                 except asyncio.TimeoutError:
                     pass
