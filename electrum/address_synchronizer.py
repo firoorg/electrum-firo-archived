@@ -29,7 +29,9 @@ from typing import TYPE_CHECKING, Dict, Optional, Set, Tuple
 
 from . import bitcoin
 from .bitcoin import COINBASE_MATURITY, TYPE_ADDRESS, TYPE_PUBKEY
+from .dash_tx import tx_header_to_tx_type
 from .util import profiler, bfh, TxMinedInfo
+from .protx import ProTxManager
 from .transaction import Transaction, TxOutput
 from .synchronizer import Synchronizer
 from .verifier import SPV
@@ -76,6 +78,7 @@ class AddressSynchronizer(Logger):
         self.up_to_date = False
         # thread local storage for caching stuff
         self.threadlocal_cache = threading.local()
+        self.protx_manager = ProTxManager(self)
 
         self._get_addr_balance_cache = {}
 
@@ -92,6 +95,7 @@ class AddressSynchronizer(Logger):
         self.check_history()
         self.load_unverified_transactions()
         self.remove_local_transactions_we_dont_have()
+        self.protx_manager.load()
 
     def is_mine(self, address):
         return self.db.is_addr_in_history(address)
@@ -150,6 +154,9 @@ class AddressSynchronizer(Logger):
             self.synchronizer = Synchronizer(self)
             self.verifier = SPV(self.network, self)
             self.network.register_callback(self.on_blockchain_updated, ['blockchain_updated'])
+            self.protx_manager.on_network_start(self.network)
+            dash_net = self.network.dash_net
+
 
     def on_blockchain_updated(self, event, *args):
         self._get_addr_balance_cache = {}  # invalidate cache
@@ -163,6 +170,7 @@ class AddressSynchronizer(Logger):
                 asyncio.run_coroutine_threadsafe(self.verifier.stop(), self.network.asyncio_loop)
                 self.verifier = None
             self.network.unregister_callback(self.on_blockchain_updated)
+            dash_net = self.network.dash_net
             self.db.put('stored_height', self.get_local_height())
 
     def add_address(self, address):

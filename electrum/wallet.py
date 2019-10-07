@@ -47,7 +47,7 @@ from .util import (NotEnoughFunds, UserCancelled, profiler,
                    InvalidPassword, format_time, timestamp_to_datetime, Satoshis,
                    Fiat, bfh, bh2u, TxMinedInfo, quantize_feerate)
 from .bitcoin import (COIN, TYPE_ADDRESS, is_address, address_to_script,
-                      is_minikey, relayfee, dust_threshold)
+                      is_minikey, relayfee, dust_threshold, public_key_to_p2pkh)
 from .crypto import sha256d
 from . import keystore
 from .keystore import load_keystore, Hardware_KeyStore
@@ -224,6 +224,9 @@ class Abstract_Wallet(AddressSynchronizer):
         self.receive_requests      = storage.get('payment_requests', {})
 
         self.calc_unused_change_addresses()
+
+        # Delegate keys for signing Masternode Pings.
+        self.masternode_delegates = storage.get('masternode_delegates', {})
 
         # save wallet type the first time
         if self.storage.get('wallet_type') is None:
@@ -1449,6 +1452,49 @@ class Abstract_Wallet(AddressSynchronizer):
     def is_billing_address(self, addr):
         # overloaded for TrustedCoin wallets
         return False
+
+    # Dash Abstract_Wallet additions
+    def get_delegate_private_key(self, pubkey):
+        """Get the private delegate key for pubkey."""
+        return self.masternode_delegates.get(pubkey, '')
+
+    def import_masternode_delegate(self, sec):
+        """Import the private key for a masternode."""
+        try:
+            txin_type, key, is_compressed = bitcoin.deserialize_privkey(sec)
+            pubkey = ecc.ECPrivkey(key)\
+                .get_public_key_hex(compressed=is_compressed)
+            address = public_key_to_p2pkh(pubkey)
+        except BaseException:
+            raise Exception('Invalid private key')
+
+#        if self.masternode_delegates.get(pubkey):
+#            raise AlreadyHaveAddress('Masternode key already in wallet',
+#                                     address)
+
+        self.masternode_delegates[pubkey] = sec
+        self.storage.put('masternode_delegates', self.masternode_delegates)
+        return pubkey
+
+    def delete_masternode_delegate(self, pubkey):
+        if self.masternode_delegates.get(pubkey):
+            del self.masternode_delegates[pubkey]
+            self.storage.put('masternode_delegates', self.masternode_delegates)
+
+    def sign_masternode_ping(self, ping, pubkey):
+        """Sign a Masternode Ping for address."""
+        sec = self.masternode_delegates.get(pubkey)
+        if not sec:
+            raise Exception('Private key not known for public key %s' % pubkey)
+        ping.sign(sec)
+        return True
+
+    def sign_budget_vote(self, vote, pubkey):
+        """Sign a Budget Vote for address."""
+        sec = self.masternode_delegates.get(pubkey)
+        if not sec:
+            raise Exception('Private key not known for public key %s' % pubkey)
+        return vote.sign(sec)
 
     def is_watching_only(self) -> bool:
         raise NotImplementedError()
