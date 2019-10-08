@@ -186,7 +186,7 @@ class MasternodeEditor(QWidget):
         self.addr_edit = NetworkAddressWidget()
         self.delegate_key_edit = QLineEdit()
         self.delegate_key_edit.setFont(QFont(util.MONOSPACE_FONT))
-        self.delegate_key_edit.setPlaceholderText(_('Your znode\'s private key'))
+        self.delegate_key_edit.setPlaceholderText(_('Your Znode\'s private key'))
         self.protocol_version_edit = QLineEdit()
         self.protocol_version_edit.setText('70201')
 
@@ -287,7 +287,7 @@ class MasternodeOutputsTab(QWidget):
 
         vbox = QVBoxLayout()
 
-        desc = ' '.join(['Use this tab to scan for and choose a collateral payment for your znode.',
+        desc = ' '.join(['Use this tab to scan for and choose a collateral payment for your Znode.',
             'A valid collateral payment is exactly 1000 XZC.'])
         desc = QLabel(_(desc))
         desc.setWordWrap(True)
