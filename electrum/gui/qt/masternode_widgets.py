@@ -20,7 +20,7 @@ def masternode_status(status):
     Returns a 3-tuple of (enabled, one_word_description, description).
     """
     statuses = {
-        'PRE_ENABLED': (True, _('Enabling'), _('Waiting for znode to enable itself.')),
+        'PRE_ENABLED': (True, _('Enabling'), _('Waiting for Znode to enable itself.')),
         'ENABLED': (True, _('Enabled'), _('Znode is enabled.')),
         'EXPIRED': (False, _('Disabled'), _('Znode failed to ping the network and was disabled.')),
         'VIN_SPENT': (False, _('Disabled'), _('Collateral payment has been spent.')),
