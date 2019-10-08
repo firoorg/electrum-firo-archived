@@ -31,7 +31,7 @@ def masternode_status(status):
         return statuses[status]
     elif status is False:
         return (False, _('N/A'), _('Znode has not been seen on the network.'))
-    return (False, _('Unknown'), _('Unknown znode status.'))
+    return (False, _('Unknown'), _('Unknown Znode status.'))
 
 class NetworkAddressWidget(QWidget):
     """Widget that represents a network address."""
@@ -179,7 +179,7 @@ class MasternodeEditor(QWidget):
         super(MasternodeEditor, self).__init__(parent)
 
         self.alias_edit = QLineEdit()
-        self.alias_edit.setPlaceholderText(_('Enter a name for this znode'))
+        self.alias_edit.setPlaceholderText(_('Enter a name for this Znode'))
 
         self.vin_edit = PrevOutWidget()
 
@@ -385,7 +385,7 @@ class SignAnnounceWidget(QWidget):
         self.mapper.addMapping(self.collateral_edit, model.VIN, b'string')
         self.mapper.addMapping(self.delegate_edit, model.DELEGATE)
 
-        self.sign_button = QPushButton(_('Activate znode'))
+        self.sign_button = QPushButton(_('Activate Znode'))
         self.sign_button.setEnabled(False)
         self.sign_button.clicked.connect(self.sign_announce)
 
