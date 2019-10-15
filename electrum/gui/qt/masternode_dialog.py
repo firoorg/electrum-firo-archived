@@ -285,7 +285,7 @@ class MasternodeDialog(QDialog, util.MessageBoxMixin, Logger):
         Logger.__init__(self)
         self.gui = parent
         self.manager = manager
-        self.setWindowTitle(_('Masternode Manager'))
+        self.setWindowTitle(_('Znode Manager'))
 
         self.waiting_dialog = None
         self.create_layout()
