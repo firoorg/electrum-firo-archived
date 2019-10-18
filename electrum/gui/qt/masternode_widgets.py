@@ -20,7 +20,7 @@ def masternode_status(status):
     Returns a 3-tuple of (enabled, one_word_description, description).
     """
     statuses = {
-        'PRE_ENABLED': (True, _('Enabling'), _('Waiting for znode to enable itself.')),
+        'PRE_ENABLED': (True, _('Enabling'), _('Waiting for Znode to enable itself.')),
         'ENABLED': (True, _('Enabled'), _('Znode is enabled.')),
         'EXPIRED': (False, _('Disabled'), _('Znode failed to ping the network and was disabled.')),
         'VIN_SPENT': (False, _('Disabled'), _('Collateral payment has been spent.')),
@@ -31,7 +31,7 @@ def masternode_status(status):
         return statuses[status]
     elif status is False:
         return (False, _('N/A'), _('Znode has not been seen on the network.'))
-    return (False, _('Unknown'), _('Unknown znode status.'))
+    return (False, _('Unknown'), _('Unknown Znode status.'))
 
 class NetworkAddressWidget(QWidget):
     """Widget that represents a network address."""
@@ -179,14 +179,14 @@ class MasternodeEditor(QWidget):
         super(MasternodeEditor, self).__init__(parent)
 
         self.alias_edit = QLineEdit()
-        self.alias_edit.setPlaceholderText(_('Enter a name for this znode'))
+        self.alias_edit.setPlaceholderText(_('Enter a name for this Znode'))
 
         self.vin_edit = PrevOutWidget()
 
         self.addr_edit = NetworkAddressWidget()
         self.delegate_key_edit = QLineEdit()
         self.delegate_key_edit.setFont(QFont(util.MONOSPACE_FONT))
-        self.delegate_key_edit.setPlaceholderText(_('Your znode\'s private key'))
+        self.delegate_key_edit.setPlaceholderText(_('Your Znode\'s private key'))
         self.protocol_version_edit = QLineEdit()
         self.protocol_version_edit.setText('70201')
 
@@ -287,7 +287,7 @@ class MasternodeOutputsTab(QWidget):
 
         vbox = QVBoxLayout()
 
-        desc = ' '.join(['Use this tab to scan for and choose a collateral payment for your znode.',
+        desc = ' '.join(['Use this tab to scan for and choose a collateral payment for your Znode.',
             'A valid collateral payment is exactly 1000 XZC.'])
         desc = QLabel(_(desc))
         desc.setWordWrap(True)
@@ -385,7 +385,7 @@ class SignAnnounceWidget(QWidget):
         self.mapper.addMapping(self.collateral_edit, model.VIN, b'string')
         self.mapper.addMapping(self.delegate_edit, model.DELEGATE)
 
-        self.sign_button = QPushButton(_('Activate znode'))
+        self.sign_button = QPushButton(_('Activate Znode'))
         self.sign_button.setEnabled(False)
         self.sign_button.clicked.connect(self.sign_announce)
 

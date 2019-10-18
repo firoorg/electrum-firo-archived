@@ -285,7 +285,7 @@ class MasternodeDialog(QDialog, util.MessageBoxMixin, Logger):
         Logger.__init__(self)
         self.gui = parent
         self.manager = manager
-        self.setWindowTitle(_('Masternode Manager'))
+        self.setWindowTitle(_('Znode Manager'))
 
         self.waiting_dialog = None
         self.create_layout()
@@ -339,9 +339,9 @@ class MasternodeDialog(QDialog, util.MessageBoxMixin, Logger):
         self.masternodes_widget = MasternodesWidget(self.manager)
 
         self.tabs = QTabWidget()
-        self.tabs.addTab(self.create_view_masternode_tab(), _('View znode'))
+        self.tabs.addTab(self.create_view_masternode_tab(), _('View Znode'))
         self.tabs.addTab(self.create_collateral_tab(), _('Choose collateral'))
-        self.tabs.addTab(self.create_sign_announce_tab(), _('Activate znode'))
+        self.tabs.addTab(self.create_sign_announce_tab(), _('Activate Znode'))
         self.tabs.addTab(self.create_masternode_conf_tab(), _('znode.conf'))
         # Disabled until API is stable.
 #        self.tabs.addTab(self.create_vote_tab(), _('Vote'))
@@ -368,8 +368,8 @@ class MasternodeDialog(QDialog, util.MessageBoxMixin, Logger):
 
     def create_view_masternode_tab(self):
         """Create the tab used to view masternodes."""
-        desc = ' '.join(['In this tab, you can view your znodes and fill in required data about them.',
-            'The collateral payment for a znode can be specified using the "Choose Collateral" tab.',
+        desc = ' '.join(['In this tab, you can view your Znodes and fill in required data about them.',
+            'The collateral payment for a Znode can be specified using the "Choose Collateral" tab.',
         ])
         desc = QLabel(_(desc))
         desc.setWordWrap(True)
@@ -392,13 +392,13 @@ class MasternodeDialog(QDialog, util.MessageBoxMixin, Logger):
         mapper.addMapping(editor.delegate_key_edit, MasternodesModel.DELEGATE)
         mapper.addMapping(editor.protocol_version_edit, MasternodesModel.PROTOCOL_VERSION)
 
-        self.save_new_masternode_button = QPushButton('Save as new znode')
+        self.save_new_masternode_button = QPushButton('Save as new Znode')
         self.save_new_masternode_button.clicked.connect(lambda: self.save_current_masternode(as_new=True))
 
-        self.save_masternode_button = QPushButton(_('Save znode'))
+        self.save_masternode_button = QPushButton(_('Save Znode'))
         self.save_masternode_button.clicked.connect(self.save_current_masternode)
 
-        self.delete_masternode_button = QPushButton(_('Delete znode'))
+        self.delete_masternode_button = QPushButton(_('Delete Znode'))
         self.delete_masternode_button.clicked.connect(self.delete_current_masternode)
 
         vbox = QVBoxLayout()
@@ -416,7 +416,7 @@ class MasternodeDialog(QDialog, util.MessageBoxMixin, Logger):
 
         desc = ' '.join(['You can use this form to import your znode.conf file.',
             'This file is usually located in the same directory that your wallet file is in.',
-            'If you just need to import your znode\'s private key, use the regular process for importing a key.'])
+            'If you just need to import your Znode\'s private key, use the regular process for importing a key.'])
         desc = QLabel(_(desc))
         desc.setWordWrap(True)
 
@@ -471,7 +471,7 @@ class MasternodeDialog(QDialog, util.MessageBoxMixin, Logger):
 
         num = self.masternodes_widget.import_masternode_conf_lines(conf_lines, pw)
         if not num:
-            return self.show_warning(_('Could not import any znode'
+            return self.show_warning(_('Could not import any Znode'
                                        ' configurations. Please ensure that'
                                        ' they are not already imported.'),
                                      title=_('Failed to Import'))
@@ -500,7 +500,7 @@ class MasternodeDialog(QDialog, util.MessageBoxMixin, Logger):
     def delete_current_masternode(self):
         """Delete the masternode that is being viewed."""
         mn = self.selected_masternode()
-        if self.question(_('Do you want to remove the znode'
+        if self.question(_('Do you want to remove the Znode'
                            ' configuration for') + ' %s?' % mn.alias,
                          title=_('Delete')):
             self.masternodes_widget.remove_masternode(mn.alias)
@@ -573,9 +573,9 @@ class MasternodeDialog(QDialog, util.MessageBoxMixin, Logger):
         return self.collateral_tab
 
     def create_sign_announce_tab(self):
-        desc = ' '.join(['You can sign a Znode Announce message to activate your znode.',
-            'First, ensure that all the required data has been entered for this znode.',
-            'Then, click "Activate znode" to activate your znode.',
+        desc = ' '.join(['You can sign a Znode Announce message to activate your Znode.',
+            'First, ensure that all the required data has been entered for this Znode.',
+            'Then, click "Activate Znode" to activate your Znode.',
         ])
         desc = QLabel(_(desc))
         desc.setWordWrap(True)
@@ -595,7 +595,7 @@ class MasternodeDialog(QDialog, util.MessageBoxMixin, Logger):
         """Sign an announce for alias. This is called by SignAnnounceWidget."""
         pw = None
         if self.manager.wallet.has_password():
-            pw = self.gui.password_dialog(msg=_('Please enter your password to activate znode "%s".' % alias))
+            pw = self.gui.password_dialog(msg=_('Please enter your password to activate Znode "%s".' % alias))
             if pw is None:
                 return
 
