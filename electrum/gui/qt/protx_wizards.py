@@ -85,10 +85,9 @@ class OperationTypeWizardPage(QWizardPage):
         self.setSubTitle(_('Select operation type and ownership properties.'))
 
         self.rb_import = QRadioButton(_('Import and register legacy '
-                                        'Masternode as DIP3 Masternode'))
-        self.rb_create = QRadioButton(_('Create and register DIP3 Masternode'))
-        self.rb_connect = QRadioButton(_('Connect to registered DIP3 '
-                                         'Masternode'))
+                                        'Znode as DIP3 Znode'))
+        self.rb_create = QRadioButton(_('Create and register DIP3 Znode'))
+        self.rb_connect = QRadioButton(_('Connect to registered DIP3 Znode'))
         self.rb_import.setChecked(True)
         self.rb_connect.setEnabled(False)
         self.button_group = QButtonGroup()
@@ -102,8 +101,8 @@ class OperationTypeWizardPage(QWizardPage):
         self.gb_create = QGroupBox(_('Select operation type'))
         self.gb_create.setLayout(gb_vbox)
 
-        self.cb_owner = QCheckBox(_('I am an owner of this Masternode'))
-        self.cb_operator = QCheckBox(_('I am an operator of this Masternode'))
+        self.cb_owner = QCheckBox(_('I am an owner of this Znode'))
+        self.cb_operator = QCheckBox(_('I am an operator of this Znode'))
         self.cb_owner.setChecked(True)
         self.cb_owner.stateChanged.connect(self.cb_state_changed)
         self.cb_operator.setChecked(True)
@@ -147,8 +146,8 @@ class ImportLegacyWizardPage(QWizardPage):
     def __init__(self, parent=None):
         super(ImportLegacyWizardPage, self).__init__(parent)
         self.parent = parent
-        self.setTitle(_('Import Legacy Masternode'))
-        self.setSubTitle(_('Select legacy Masternode to import.'))
+        self.setTitle(_('Import Legacy Znode'))
+        self.setSubTitle(_('Select legacy Znode to import.'))
 
         legacy = self.parent.legacy
         legacy.load()
@@ -162,7 +161,7 @@ class ImportLegacyWizardPage(QWizardPage):
             self.lmns_cbox.addItem(alias)
             self.lmns_dict[alias] = lmn
         self.lmns_cbox.currentIndexChanged.connect(self.on_change_lmn)
-        self.imp_btn = QPushButton(_('Load from masternode.conf'))
+        self.imp_btn = QPushButton(_('Load from znode.conf'))
         self.imp_btn.clicked.connect(self.load_masternode_conf)
 
         service_label = QLabel(_('Service:'))
@@ -207,7 +206,7 @@ class ImportLegacyWizardPage(QWizardPage):
     @pyqtSlot()
     def load_masternode_conf(self):
         dlg = QFileDialog
-        conf_fname = dlg.getOpenFileName(self, _('Open masternode.conf'),
+        conf_fname = dlg.getOpenFileName(self, _('Open znode.conf'),
                                          '', 'Conf Files (*.conf)')[0]
         if not conf_fname:
             return
@@ -596,12 +595,12 @@ class BlsKeysWizardPage(QWizardPage):
 
         self.setTitle(_('BLS keys setup'))
         if start_id in parent.UPD_ENTER_PAGES:
-            self.setSubTitle(_('Regenerate BLS keypair, setup dashd'))
+            self.setSubTitle(_('Regenerate BLS keypair, setup zcoind'))
             if not self.bls_priv.text():
                 self.bls_priv.setText(new_mn.bls_privk)
                 self.bls_pub.setText(new_mn.pubkey_operator)
         else:
-            self.setSubTitle(_('Generate BLS keypair, setup dashd'))
+            self.setSubTitle(_('Generate BLS keypair, setup zcoind'))
 
         if not self.bls_priv.text():
             self.generate_bls_keypair()
@@ -618,11 +617,11 @@ class BlsKeysWizardPage(QWizardPage):
         bls_privk_hex = bh2u(bls_privk.serialize())
         bls_pubk_hex = bh2u(bls_pubk.serialize())
         self.bls_info_label.setText(_('BLS keypair generated. Before '
-                                      'registering new Masternode copy next '
-                                      'line to ~/.dashcore/dash.conf and '
-                                      'restart masternode:'))
+                                      'registering a new Znode copy next '
+                                      'line to ~/.zcoin/znode.conf and '
+                                      'restart the Znode'))
         self.bls_info_label.show()
-        self.bls_info_edit.setText('masternodeblsprivkey=%s' % bls_privk_hex)
+        self.bls_info_edit.setText('znodeblsprivkey=%s' % bls_privk_hex)
         self.bls_info_edit.show()
         self.bls_pub.setText(bls_pubk_hex)
         self.bls_priv.setText(bls_privk_hex)
@@ -778,12 +777,12 @@ class SaveDip3WizardPage(QWizardPage):
             self.alias.setText(new_mn.alias)
 
         if new_mn.is_owned and new_mn.is_operated:
-            ownership = _('This wallet is owns and operates on new Masternode')
+            ownership = _('This wallet is owns and operates on new Znode')
         elif new_mn.is_owned:
-            ownership = (_('This wallet is owns on new Masternode '
+            ownership = (_('This wallet is owns on new Znode '
                            '(external operator)'))
         elif new_mn.is_operated:
-            ownership = (_('This wallet is operates on new Masternode'))
+            ownership = (_('This wallet is operates on new Znode'))
         else:
             ownership = _('None')
         self.ownership.setText(ownership)
@@ -835,8 +834,8 @@ class SaveDip3WizardPage(QWizardPage):
             op_type = 'unknown'
 
         self.setTitle('%s DIP3 masternode' % op_type.capitalize())
-        self.setSubTitle('Examine parameters and %s Masternode.' % op_type)
-        tx_cb_label_text = 'Make %s after saving Masternode data' % tx_name
+        self.setSubTitle('Examine parameters and %s Znode.' % op_type)
+        tx_cb_label_text = 'Make %s after saving Znode data' % tx_name
         self.cb_make_tx.setText(tx_cb_label_text)
         if start_id == parent.OPERATION_TYPE_PAGE:
             self.parent.setButtonText(QWizard.CommitButton,
@@ -936,7 +935,7 @@ class DoneWizardPage(QWizardPage):
                 operation = 'Created'
             else:
                 operation = 'Updated'
-            new_label_text = ('%s Masternode with alias: %s.' %
+            new_label_text = ('%s Znode with alias: %s.' %
                               (operation, parent.saved_mn))
             new_mn_label = QLabel(new_label_text)
             self.layout.addWidget(new_mn_label)
@@ -954,7 +953,7 @@ class CollateralWizardPage(QWizardPage):
         self.parent = parent
         self.legacy = parent.gui.masternode_manager
         self.setTitle('Select Collateral')
-        self.setSubTitle('Select collateral output for Masternode.')
+        self.setSubTitle('Select collateral output for Znode.')
 
         self.frozen_cb = QCheckBox('Include frozen addresses')
         self.frozen_cb.setChecked(False)
@@ -1104,14 +1103,14 @@ class ServiceWizardPage(QWizardPage):
         self.parent = parent
         self.cur_service = None
         self.setTitle('Service params')
-        self.setSubTitle('Select masternode IP address and port.')
+        self.setSubTitle('Select Znode IP address and port.')
 
         layout = QGridLayout()
 
-        self.srv_addr_label = QLabel('Masternode Service Address:')
+        self.srv_addr_label = QLabel('Znode Service Address:')
         self.srv_addr = SLineEdit()
         self.srv_addr.textChanged.connect(self.on_service_changed)
-        self.srv_port_label = QLabel('Masternode Service Port:')
+        self.srv_port_label = QLabel('Znode Service Port:')
         self.srv_port = SLineEdit()
         self.srv_port.textChanged.connect(self.on_service_changed)
 
@@ -1190,15 +1189,15 @@ class UpdSrvWizardPage(QWizardPage):
     def __init__(self, parent=None):
         super(UpdSrvWizardPage, self).__init__(parent)
         self.parent = parent
-        self.setTitle('Update Service Features of Masternode')
-        self.setSubTitle('Set Masternode service parameters.')
+        self.setTitle('Update Service Features of Znode')
+        self.setSubTitle('Set Znode service parameters.')
 
         layout = QGridLayout()
 
-        self.srv_addr_label = QLabel('Masternode Service Address:')
+        self.srv_addr_label = QLabel('Znode Service Address:')
         self.srv_addr = SLineEdit()
         self.srv_addr.textChanged.connect(self.on_service_changed)
-        self.srv_port_label = QLabel('Masternode Service Port:')
+        self.srv_port_label = QLabel('Znode Service Port:')
         self.srv_port = SLineEdit()
         self.srv_port.textChanged.connect(self.on_service_changed)
 
@@ -1465,10 +1464,10 @@ class Dip3MasternodeWizard(QWizard):
         if not alias:
             raise ValidationError('Alias not set')
         if len(alias) > 32:
-            raise ValidationError('Masternode alias cannot be longer '
+            raise ValidationError('Znode alias cannot be longer '
                                   'than 32 characters')
         if alias in self.manager.mns.keys():
-            raise ValidationError('Masternode with alias %s already exists' %
+            raise ValidationError('Znode with alias %s already exists' %
                                   alias)
         return alias
 
@@ -1580,7 +1579,7 @@ class Dip3FileWizard(QWizard):
         self.skipped_aliases = []
         self.imported_path = None
 
-        title = 'Export/Import DIP3 Masternodes to/from file'
+        title = 'Export/Import DIP3 Znodes to/from file'
         logo = QPixmap(icon_path('tab_dip3.png'))
         logo = logo.scaledToWidth(32, mode=Qt.SmoothTransformation)
         self.setWizardStyle(QWizard.ClassicStyle)
@@ -1598,8 +1597,8 @@ class FileOpTypeWizardPage(QWizardPage):
         self.setTitle('Operation type')
         self.setSubTitle('Select operation type.')
 
-        self.rb_export = QRadioButton('Export DIP3 Masternodes to file')
-        self.rb_import = QRadioButton('Import DIP3 Masternodes from file')
+        self.rb_export = QRadioButton('Export DIP3 Znodes to file')
+        self.rb_import = QRadioButton('Import DIP3 Znodes from file')
         self.rb_export.setChecked(True)
         self.button_group = QButtonGroup()
         self.button_group.addButton(self.rb_export)
@@ -1629,9 +1628,9 @@ class ExportToFileWizardPage(QWizardPage):
         self.parent = parent
         self.setCommitPage(True)
         self.setTitle('Export to file')
-        self.setSubTitle('Export DIP3 Masternodes to file.')
+        self.setSubTitle('Export DIP3 Znodes to file.')
 
-        self.lb_aliases = QLabel('Exported DIP3 Masternodes:')
+        self.lb_aliases = QLabel('Exported DIP3 Znodes:')
         self.lw_aliases = QListWidget()
         self.lw_aliases.setSelectionMode(QAbstractItemView.ExtendedSelection)
         self.sel_model = self.lw_aliases.selectionModel()
@@ -1660,7 +1659,7 @@ class ExportToFileWizardPage(QWizardPage):
         return self.parent.DONE_PAGE
 
     def validatePage(self):
-        fdlg = QFileDialog(self, 'Save DIP3 Masternodes', os.getenv('HOME'))
+        fdlg = QFileDialog(self, 'Save DIP3 Znodes', os.getenv('HOME'))
         fdlg.setOptions(QFileDialog.DontConfirmOverwrite)
         fdlg.setAcceptMode(QFileDialog.AcceptSave)
         fdlg.setFileMode(QFileDialog.AnyFile)
@@ -1708,11 +1707,11 @@ class ImportFromFileWizardPage(QWizardPage):
         self.parent = parent
         self.setCommitPage(True)
         self.setTitle('Import from file')
-        self.setSubTitle('Import DIP3 Masternodes from file.')
+        self.setSubTitle('Import DIP3 Znodes from file.')
 
         self.imp_btn = QPushButton('Load *.protx file')
         self.imp_btn.clicked.connect(self.on_load_protx)
-        owerwrite_msg = 'Overwrite existing Masternodes with same aliases'
+        owerwrite_msg = 'Overwrite existing Znodes with same aliases'
         self.cb_overwrite = QCheckBox(owerwrite_msg)
 
         self.lw_i_label = QLabel('Imported aliases')
@@ -1748,7 +1747,7 @@ class ImportFromFileWizardPage(QWizardPage):
 
     @pyqtSlot()
     def on_load_protx(self):
-        fdlg = QFileDialog(self, 'Load DIP3 Masternodes', os.getenv('HOME'))
+        fdlg = QFileDialog(self, 'Load DIP3 Znodes', os.getenv('HOME'))
         fdlg.setAcceptMode(QFileDialog.AcceptOpen)
         fdlg.setFileMode(QFileDialog.AnyFile)
         fdlg.setNameFilter("ProTx (*.protx)");
