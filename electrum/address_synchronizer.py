@@ -421,7 +421,7 @@ class AddressSynchronizer(Logger):
         return f
 
     @with_local_height_cached
-    def get_history(self, domain=None):
+    def get_history(self, domain=None, config=None):
         # get domain
         if domain is None:
             domain = self.get_addresses()
@@ -448,8 +448,14 @@ class AddressSynchronizer(Logger):
         c, u, x = self.get_balance(domain)
         balance = c + u + x
         h2 = []
+        show_dip2 = config.get('show_dip2_tx_type', False) if config else False
         for tx_hash, tx_mined_status, delta in history:
-            h2.append((tx_hash, tx_mined_status, delta, balance))
+            tx_type = 0
+            if show_dip2:
+                tx = self.db.get_transaction(tx_hash)
+                if tx:
+                    tx_type = tx_header_to_tx_type(bfh(tx.raw[:8]))
+            h2.append((tx_hash, tx_type, tx_mined_status, delta, balance))
             if balance is None or delta is None:
                 balance = None
             else:
