@@ -219,7 +219,7 @@ class AddressSynchronizer(Logger):
             # BUT we track is_mine inputs in a txn, and during subsequent calls
             # of add_transaction tx, we might learn of more-and-more inputs of
             # being is_mine, as we roll the gap_limit forward
-            is_coinbase = tx.inputs()[0]['type'] == 'coinbase'
+            is_coinbase = self.get_coinbase_tx_type(tx)
             tx_height = self.get_tx_height(tx_hash).height
             if not allow_unrelated:
                 # note that during sync, if the transactions are not properly sorted,
@@ -738,7 +738,7 @@ class AddressSynchronizer(Logger):
         for txo, (tx_height, v, is_cb) in received.items():
             if txo in excluded_coins:
                 continue
-            if is_cb and tx_height + COINBASE_MATURITY > local_height:
+            if (is_cb + 0 == 1) and tx_height + COINBASE_MATURITY > local_height:
                 x += v
             elif tx_height > 0:
                 c += v
@@ -805,3 +805,11 @@ class AddressSynchronizer(Logger):
 
     def synchronize(self):
         pass
+
+    def get_coinbase_tx_type(self, tx):
+        result = 0
+        if tx.inputs()[0]['type'] == 'coinbase':
+            result = 1
+            if tx.inputs()[0]['prevout_n'] != 0xffffffff:
+                result = 2
+        return result

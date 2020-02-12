@@ -314,7 +314,7 @@ class TxDialog(QDialog, MessageBoxMixin):
         cursor = i_text.textCursor()
         for x in self.tx.inputs():
             if x['type'] == 'coinbase':
-                cursor.insertText('coinbase')
+                cursor.insertText(self.get_coinbase_tx_type(x))
             else:
                 prevout_hash = x.get('prevout_hash')
                 prevout_n = x.get('prevout_n')
@@ -384,6 +384,11 @@ class TxDialog(QDialog, MessageBoxMixin):
 
         vbox.addLayout(hbox_stats)
 
+    def get_coinbase_tx_type(self, tx):
+        result = 'Coinbase'
+        if tx['prevout_n'] != 0xffffffff:
+            result = 'Sigma'
+        return result
 
 class QTextEditWithDefaultSize(QTextEdit):
     def sizeHint(self):
