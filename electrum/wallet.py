@@ -1381,7 +1381,7 @@ class Abstract_Wallet(AddressSynchronizer):
 
     def sign_message(self, address, message, password):
         index = self.get_address_index(address)
-        return self.keystore.sign_message(index, message, password)
+        return self.keystore.sign_message(index, message.encode('utf-8'), password)
 
     def decrypt_message(self, pubkey, message, password) -> bytes:
         addr = self.pubkeys_to_address(pubkey)
