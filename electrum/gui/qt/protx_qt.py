@@ -511,13 +511,13 @@ class Dip3TabWidget(QTabWidget):
 
         state = self.mn_list.protx_state
         if state == self.mn_list.DIP3_DISABLED:
-            return _('DIP3 Masternodes is currently disabled.')
+            return _('DIP3 Znodes is currently disabled.')
 
         count = len(self.mn_list.protx_mns)
         connected = self.gui.network.is_connected()
         loading = connected and self.mn_list.protx_loading
         ready = _('Loading') if loading else _('Found')
-        return (_('%s %s registered DIP3 Masternodes.') % (ready, count))
+        return (_('%s %s registered DIP3 Znodes.') % (ready, count))
 
     def update_registered_label(self):
         self.reg_label.setText(self.registered_label())
@@ -525,7 +525,7 @@ class Dip3TabWidget(QTabWidget):
     def wallet_label(self):
         mns = self.manager.mns
         count = len(mns)
-        mn_str = _('Masternode') if count == 1 else _('Masternodes')
+        mn_str = _('Znode') if count == 1 else _('Znodes')
         def_label_str = _('Wallet contains %s DIP3 %s.') % (count, mn_str)
 
         if not self.mn_list:
@@ -533,7 +533,7 @@ class Dip3TabWidget(QTabWidget):
 
         state = self.mn_list.protx_state
         if state == self.mn_list.DIP3_DISABLED:
-            return (_('DIP3 Masternodes is currently disabled.'))
+            return (_('DIP3 Znodes is currently disabled.'))
 
         connected = self.gui.network.is_connected()
         loading = connected and self.mn_list.protx_loading
@@ -585,7 +585,7 @@ class Dip3TabWidget(QTabWidget):
         vbox.addWidget(hw)
         vbox.addWidget(self.reg_view)
         w.setLayout(vbox)
-        self.addTab(w, read_QIcon('tab_search.png'), _('Registered MNs'))
+        self.addTab(w, read_QIcon('tab_search.png'), _('Network Znodes'))
         if not self.mn_list.protx_loading:
             self.reg_model.reload_data()
         return w
@@ -661,7 +661,7 @@ class Dip3TabWidget(QTabWidget):
         vbox.addWidget(hw)
         vbox.addWidget(self.w_view)
         w.setLayout(vbox)
-        self.addTab(w, read_QIcon('tab_dip3.png'), _('Wallet MNs'))
+        self.addTab(w, read_QIcon('tab_dip3.png'), _('Wallet Znodes'))
         if not self.mn_list.protx_loading:
             self.w_model.reload_data()
         return w

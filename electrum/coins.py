@@ -37,4 +37,4 @@ class Zcoin(Coin):
 
 
 class ZcoinTestnet(Zcoin):
-    PRE_MTP_BLOCKS = 420
+    PRE_MTP_BLOCKS = 1

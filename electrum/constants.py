@@ -80,6 +80,7 @@ class BitcoinMainnet(AbstractNet):
     BIP44_COIN_TYPE = 136
     COIN = coins.Zcoin()
     XPUB_HEADERS_INV = inv_dict(XPUB_HEADERS)
+    DIP3_ACTIVATION_HEIGHT = 1
 
 class BitcoinTestnet(AbstractNet):
 
@@ -88,7 +89,7 @@ class BitcoinTestnet(AbstractNet):
     ADDRTYPE_P2PKH = 65
     ADDRTYPE_P2SH = 178
     SEGWIT_HRP = "txzc"
-    GENESIS = "1e3487fdb1a7d46dac3e8f3e58339c6eff54abf6aef353485f3ed64250a35e89"
+    GENESIS = "aa22adcc12becaf436027ffe62a8fb21b234c58c23865291e5dc52cf53f64fca"
     DEFAULT_PORTS = {'t': '51001', 's': '51002'}
     DEFAULT_SERVERS = read_json('servers_testnet.json', {})
     CHECKPOINTS = read_json('checkpoints_testnet.json', [])
@@ -111,6 +112,7 @@ class BitcoinTestnet(AbstractNet):
     XPUB_HEADERS_INV = inv_dict(XPUB_HEADERS)
     BIP44_COIN_TYPE = 1
     COIN = coins.ZcoinTestnet()
+    DIP3_ACTIVATION_HEIGHT = 1
 
 
 class BitcoinRegtest(BitcoinTestnet):
