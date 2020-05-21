@@ -195,7 +195,7 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger):
         add_optional_tab(tabs, self.addresses_tab, read_QIcon("tab_addresses.png"), _("&Addresses"), "addresses")
         add_optional_tab(tabs, self.utxo_tab, read_QIcon("tab_coins.png"), _("Co&ins"), "utxo")
         add_optional_tab(tabs, self.contacts_tab, read_QIcon("tab_contacts.png"), _("Con&tacts"), "contacts")
-        add_optional_tab(tabs, self.dip3_tab, read_QIcon("tab_dip3.png"), _("&DIP3"), "dip3")
+        add_optional_tab(tabs, self.dip3_tab, read_QIcon("tab_dip3.png"), _("&Evo"), "dip3")
         add_optional_tab(tabs, self.console_tab, read_QIcon("tab_console.png"), _("Con&sole"), "console")
 
         tabs.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
@@ -1781,8 +1781,6 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger):
                     self.broadcast_transaction(tx, tx_desc)
         self.sign_tx_with_password(tx, sign_done, password)
         tx_details = self.wallet.get_tx_info(tx)
-        print(tx)
-        print(tx_details.txid)
 
     @protected
     def sign_tx(self, tx, callback, password):

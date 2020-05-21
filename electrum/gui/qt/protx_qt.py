@@ -511,13 +511,13 @@ class Dip3TabWidget(QTabWidget):
 
         state = self.mn_list.protx_state
         if state == self.mn_list.DIP3_DISABLED:
-            return _('DIP3 Znodes is currently disabled.')
+            return _('Evo Znodes is currently disabled.')
 
         count = len(self.mn_list.protx_mns)
         connected = self.gui.network.is_connected()
         loading = connected and self.mn_list.protx_loading
         ready = _('Loading') if loading else _('Found')
-        return (_('%s %s registered DIP3 Znodes.') % (ready, count))
+        return (_('%s %s registered Evo Znodes.') % (ready, count))
 
     def update_registered_label(self):
         self.reg_label.setText(self.registered_label())
@@ -526,14 +526,14 @@ class Dip3TabWidget(QTabWidget):
         mns = self.manager.mns
         count = len(mns)
         mn_str = _('Znode') if count == 1 else _('Znodes')
-        def_label_str = _('Wallet contains %s DIP3 %s.') % (count, mn_str)
+        def_label_str = _('Wallet contains %s Evo %s.') % (count, mn_str)
 
         if not self.mn_list:
             return def_label_str
 
         state = self.mn_list.protx_state
         if state == self.mn_list.DIP3_DISABLED:
-            return (_('DIP3 Znodes is currently disabled.'))
+            return (_('Evo Znodes is currently disabled.'))
 
         connected = self.gui.network.is_connected()
         loading = connected and self.mn_list.protx_loading

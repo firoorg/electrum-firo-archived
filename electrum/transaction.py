@@ -138,12 +138,16 @@ class BCDataStream(object):
         self.write(string)
 
     def read_bytes(self, length):
-        try:
-            result = self.input[self.read_cursor:self.read_cursor+length]
+        assert length >= 0
+        input_len = len(self.input)
+        read_begin = self.read_cursor
+        read_end = read_begin + length
+        if 0 <= read_begin <= input_len and read_end <= input_len:
+            result = self.input[read_begin:read_end]
             self.read_cursor += length
             return result
-        except IndexError:
-            raise SerializationError("attempt to read past end of buffer") from None
+        else:
+            raise SerializationError('attempt to read past end of buffer')
 
     def can_read_more(self) -> bool:
         return self.bytes_left() > 0
@@ -646,7 +650,7 @@ class Transaction:
         self._inputs = None
         self._outputs = None  # type: List[TxOutput]
         self.locktime = 0
-        self.version = 1
+        self.version = 2
         self.tx_type = 0
         self.extra_payload = b''
         # by default we assume this is a partial txn;
@@ -1122,9 +1126,9 @@ class Transaction:
 
     def txid(self):
         self.deserialize()
-        all_segwit = all(self.is_segwit_input(x) for x in self.inputs())
-        if not all_segwit and not self.is_complete():
-            return None
+        # all_segwit = all(self.is_segwit_input(x) for x in self.inputs())
+        # if not all_segwit and not self.is_complete():
+        #     return None
         ser = self.serialize_to_network(witness=False)
         return bh2u(sha256d(bfh(ser))[::-1])
 

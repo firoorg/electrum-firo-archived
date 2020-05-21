@@ -85,9 +85,9 @@ class OperationTypeWizardPage(QWizardPage):
         self.setSubTitle(_('Select operation type and ownership properties.'))
 
         self.rb_import = QRadioButton(_('Import and register legacy '
-                                        'Znode as DIP3 Znode'))
-        self.rb_create = QRadioButton(_('Create and register DIP3 Znode'))
-        self.rb_connect = QRadioButton(_('Connect to registered DIP3 Znode'))
+                                        'Znode as Evo Znode'))
+        self.rb_create = QRadioButton(_('Create and register Evo Znode'))
+        self.rb_connect = QRadioButton(_('Connect to registered Evo Znode'))
         self.rb_import.setChecked(True)
         self.rb_connect.setEnabled(False)
         self.button_group = QButtonGroup()
@@ -384,10 +384,12 @@ class SelectAddressesWizardPage(QWizardPage):
         self.err.setObjectName('err-label')
         self.err_label.hide()
         self.err.hide()
+        self.err.setStyleSheet("QLabel { color : red; }")
         self.hw_err = QLabel()
         self.hw_err.setWordWrap(True)
         self.hw_err.setObjectName('err-label')
         self.hw_err.hide()
+        self.hw_err.setStyleSheet("QLabel { color : red; }")
         self.cb_ignore = QCheckBox(_('Ignore warning and continue.'))
         self.cb_ignore.stateChanged.connect(self.on_change_ignore)
         self.cb_ignore.hide()
@@ -833,7 +835,7 @@ class SaveDip3WizardPage(QWizardPage):
             tx_name = 'Unknown'
             op_type = 'unknown'
 
-        self.setTitle('%s DIP3 masternode' % op_type.capitalize())
+        self.setTitle('%s Evo Znode' % op_type.capitalize())
         self.setSubTitle('Examine parameters and %s Znode.' % op_type)
         tx_cb_label_text = 'Make %s after saving Znode data' % tx_name
         self.cb_make_tx.setText(tx_cb_label_text)
@@ -1448,9 +1450,9 @@ class Dip3MasternodeWizard(QWizard):
 
         if start_id:
             self.setStartId(start_id)
-            title = 'Update DIP3 Masternode'
+            title = 'Update Evo Znode'
         else:
-            title = 'Add DIP3 Masternode'
+            title = 'Add Evo Znode'
 
         logo = QPixmap(icon_path('tab_dip3.png'))
         logo = logo.scaledToWidth(32, mode=Qt.SmoothTransformation)
@@ -1523,7 +1525,7 @@ class Dip3MasternodeWizard(QWizard):
             coll_str = '%s:%s' % (prevout_hash, prevout_n)
             if coll_str in mns_collaterals:
                 raise ValidationError('Provided Outpoint already used '
-                                      'in saved DIP3 Masternodes')
+                                      'in saved Evo Znodes')
 
         return prevout_hash, prevout_n, addr
 
@@ -1545,7 +1547,7 @@ class Dip3MasternodeWizard(QWizard):
             raise HwWarnError('Warning: sign_digest not implemented in '
                               'hardware wallet keystores. You cannot use '
                               'this wallet to sign a ProUpRegTx. You '
-                              'can register a masternode, but in the future it '
+                              'can register a Znode, but in the future it '
                               'will not be possible to change voting/payout '
                               'addresses or the operator public BLS key')
 
@@ -1579,7 +1581,7 @@ class Dip3FileWizard(QWizard):
         self.skipped_aliases = []
         self.imported_path = None
 
-        title = 'Export/Import DIP3 Znodes to/from file'
+        title = 'Export/Import Evo Znodes to/from file'
         logo = QPixmap(icon_path('tab_dip3.png'))
         logo = logo.scaledToWidth(32, mode=Qt.SmoothTransformation)
         self.setWizardStyle(QWizard.ClassicStyle)
@@ -1597,8 +1599,8 @@ class FileOpTypeWizardPage(QWizardPage):
         self.setTitle('Operation type')
         self.setSubTitle('Select operation type.')
 
-        self.rb_export = QRadioButton('Export DIP3 Znodes to file')
-        self.rb_import = QRadioButton('Import DIP3 Znodes from file')
+        self.rb_export = QRadioButton('Export Evo Znodes to file')
+        self.rb_import = QRadioButton('Import Evo Znodes from file')
         self.rb_export.setChecked(True)
         self.button_group = QButtonGroup()
         self.button_group.addButton(self.rb_export)
@@ -1628,9 +1630,9 @@ class ExportToFileWizardPage(QWizardPage):
         self.parent = parent
         self.setCommitPage(True)
         self.setTitle('Export to file')
-        self.setSubTitle('Export DIP3 Znodes to file.')
+        self.setSubTitle('Export Evo Znodes to file.')
 
-        self.lb_aliases = QLabel('Exported DIP3 Znodes:')
+        self.lb_aliases = QLabel('Exported Evo Znodes:')
         self.lw_aliases = QListWidget()
         self.lw_aliases.setSelectionMode(QAbstractItemView.ExtendedSelection)
         self.sel_model = self.lw_aliases.selectionModel()
@@ -1659,7 +1661,7 @@ class ExportToFileWizardPage(QWizardPage):
         return self.parent.DONE_PAGE
 
     def validatePage(self):
-        fdlg = QFileDialog(self, 'Save DIP3 Znodes', os.getenv('HOME'))
+        fdlg = QFileDialog(self, 'Save Evo Znodes', os.getenv('HOME'))
         fdlg.setOptions(QFileDialog.DontConfirmOverwrite)
         fdlg.setAcceptMode(QFileDialog.AcceptSave)
         fdlg.setFileMode(QFileDialog.AnyFile)
@@ -1707,7 +1709,7 @@ class ImportFromFileWizardPage(QWizardPage):
         self.parent = parent
         self.setCommitPage(True)
         self.setTitle('Import from file')
-        self.setSubTitle('Import DIP3 Znodes from file.')
+        self.setSubTitle('Import Evo Znodes from file.')
 
         self.imp_btn = QPushButton('Load *.protx file')
         self.imp_btn.clicked.connect(self.on_load_protx)
@@ -1747,7 +1749,7 @@ class ImportFromFileWizardPage(QWizardPage):
 
     @pyqtSlot()
     def on_load_protx(self):
-        fdlg = QFileDialog(self, 'Load DIP3 Znodes', os.getenv('HOME'))
+        fdlg = QFileDialog(self, 'Load Evo Znodes', os.getenv('HOME'))
         fdlg.setAcceptMode(QFileDialog.AcceptOpen)
         fdlg.setFileMode(QFileDialog.AnyFile)
         fdlg.setNameFilter("ProTx (*.protx)");

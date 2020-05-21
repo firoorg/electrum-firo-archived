@@ -1375,6 +1375,13 @@ class Abstract_Wallet(AddressSynchronizer):
         self.storage.set_keystore_encryption(bool(new_pw) and encrypt_keystore)
         self.storage.write()
 
+    def sign_digest(self, address, data, password):
+        keystore = self.keystore
+        if not hasattr(keystore, 'sign_digest'):
+            raise NotImplementedError('sign_digest not implemented '
+                                      'in keystore type %s' % type(keystore))
+        index = self.get_address_index(address)
+        return keystore.sign_digest(index, data, password)
     def sign_message(self, address, message, password):
         index = self.get_address_index(address)
         return self.keystore.sign_message(index, message.encode('utf-8'), password)
@@ -1464,9 +1471,9 @@ class Abstract_Wallet(AddressSynchronizer):
         except BaseException:
             raise Exception('Invalid private key')
 
-#        if self.masternode_delegates.get(pubkey):
-#            raise AlreadyHaveAddress('Masternode key already in wallet',
-#                                     address)
+        if self.masternode_delegates.get(pubkey):
+            raise AlreadyHaveAddress('Masternode key already in wallet',
+                                     address)
 
         self.masternode_delegates[pubkey] = sec
         self.storage.put('masternode_delegates', self.masternode_delegates)
