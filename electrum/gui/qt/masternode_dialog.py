@@ -352,7 +352,7 @@ class MasternodeDialog(QDialog, util.MessageBoxMixin, Logger):
         bottom_buttons = util.Buttons(util.CloseButton(self))
 
         vbox = QVBoxLayout()
-        self.dip3_warn = QLabel(_('Warning: Evo Znodes is active, '
+        self.dip3_warn = QLabel(_('Warning: Evo Znodes are active, '
                                   'use Evo tab instead this dialog '
                                   'to manage Znodes!'))
         self.dip3_warn.setObjectName("dip3_warn")
@@ -537,6 +537,9 @@ class MasternodeDialog(QDialog, util.MessageBoxMixin, Logger):
             self.masternodes_widget.add_masternode(MasternodeAnnounce(**kwargs))
         else:
             self.mapper.submit()
+        for mn in self.manager.masternodes:
+            if mn.alias == alias:
+                mn.delegate_key = delegate_pubkey
         self.manager.save()
         self.masternodes_widget.select_masternode(alias)
 

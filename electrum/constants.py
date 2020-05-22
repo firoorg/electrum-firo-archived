@@ -80,7 +80,7 @@ class BitcoinMainnet(AbstractNet):
     BIP44_COIN_TYPE = 136
     COIN = coins.Zcoin()
     XPUB_HEADERS_INV = inv_dict(XPUB_HEADERS)
-    DIP3_ACTIVATION_HEIGHT = 1
+    DIP3_ACTIVATION_HEIGHT = 5000
 
 class BitcoinTestnet(AbstractNet):
 
@@ -112,7 +112,7 @@ class BitcoinTestnet(AbstractNet):
     XPUB_HEADERS_INV = inv_dict(XPUB_HEADERS)
     BIP44_COIN_TYPE = 1
     COIN = coins.ZcoinTestnet()
-    DIP3_ACTIVATION_HEIGHT = 1
+    DIP3_ACTIVATION_HEIGHT = 5000
 
 
 class BitcoinRegtest(BitcoinTestnet):
