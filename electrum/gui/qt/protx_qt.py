@@ -597,6 +597,12 @@ class Dip3TabWidget(QTabWidget):
                        lambda: Dip3MNInfoDialog(self, protx_hash=h).show())
         menu.exec_(self.reg_view.viewport().mapToGlobal(position))
 
+    def keyPressEvent(self, event):
+        super(Dip3TabWidget, self).keyPressEvent(event)
+        if event.key() == Qt.Key_Escape:
+            self.w_view.clearSelection();
+            self.on_wallet_model_reset()
+
     def create_wallet_mn_tab(self):
         w = QWidget()
         hw = QWidget()

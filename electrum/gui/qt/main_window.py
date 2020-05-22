@@ -137,6 +137,7 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger):
 
         self.setup_exception_hook()
 
+        self.daemon = gui_object.daemon
         self.network = gui_object.daemon.network  # type: Network
         assert wallet, "no wallet"
         self.wallet = wallet
@@ -3359,6 +3360,7 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger):
 
         self.gui_object.timer.timeout.disconnect(self.timer_actions)
         self.gui_object.close_window(self)
+        self.daemon.stop()
 
     def plugins_dialog(self):
         self.pluginsdialog = d = WindowModalDialog(self, _('Electrum Plugins'))
