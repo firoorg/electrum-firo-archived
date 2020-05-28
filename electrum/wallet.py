@@ -45,7 +45,7 @@ from .util import (NotEnoughFunds, UserCancelled, profiler,
                    format_satoshis, format_fee_satoshis, NoDynamicFeeEstimates,
                    WalletFileException, BitcoinException,
                    InvalidPassword, format_time, timestamp_to_datetime, Satoshis,
-                   Fiat, bfh, bh2u, TxMinedInfo, quantize_feerate)
+                   Fiat, bfh, bh2u, TxMinedInfo, quantize_feerate, AlreadyHaveAddress)
 from .bitcoin import (COIN, TYPE_ADDRESS, is_address, address_to_script,
                       is_minikey, relayfee, dust_threshold, public_key_to_p2pkh)
 from .crypto import sha256d
