@@ -307,9 +307,9 @@ class DashProRegTx(ProTxBase):
             c_hash = mn.collateral.hash
             c_index = mn.collateral.index
             if c_hash == ctx.hash and c_index == ctx.index:
+                mn.protx_hash = tx.txid()
+                manager.update_mn(mn.alias, mn)
                 with manager.manager_lock:
-                    mn.protx_hash = tx.txid()
-                    manager.save()
                     manager.alias_updated = mn.alias
                 manager.notify('manager-alias-updated')
 

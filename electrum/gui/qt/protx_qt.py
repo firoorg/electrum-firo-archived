@@ -511,13 +511,13 @@ class Dip3TabWidget(QTabWidget):
 
         state = self.mn_list.protx_state
         if state == self.mn_list.DIP3_DISABLED:
-            return _('DIP3 Masternodes is currently disabled.')
+            return _('Evo Znodes is currently disabled.')
 
         count = len(self.mn_list.protx_mns)
         connected = self.gui.network.is_connected()
         loading = connected and self.mn_list.protx_loading
         ready = _('Loading') if loading else _('Found')
-        return (_('%s %s registered DIP3 Masternodes.') % (ready, count))
+        return (_('%s %s registered Evo Znodes.') % (ready, count))
 
     def update_registered_label(self):
         self.reg_label.setText(self.registered_label())
@@ -525,15 +525,15 @@ class Dip3TabWidget(QTabWidget):
     def wallet_label(self):
         mns = self.manager.mns
         count = len(mns)
-        mn_str = _('Masternode') if count == 1 else _('Masternodes')
-        def_label_str = _('Wallet contains %s DIP3 %s.') % (count, mn_str)
+        mn_str = _('Znode') if count == 1 else _('Znodes')
+        def_label_str = _('Wallet contains %s Evo %s.') % (count, mn_str)
 
         if not self.mn_list:
             return def_label_str
 
         state = self.mn_list.protx_state
         if state == self.mn_list.DIP3_DISABLED:
-            return (_('DIP3 Masternodes is currently disabled.'))
+            return (_('Evo Znodes is currently disabled.'))
 
         connected = self.gui.network.is_connected()
         loading = connected and self.mn_list.protx_loading
@@ -585,7 +585,7 @@ class Dip3TabWidget(QTabWidget):
         vbox.addWidget(hw)
         vbox.addWidget(self.reg_view)
         w.setLayout(vbox)
-        self.addTab(w, read_QIcon('tab_search.png'), _('Registered MNs'))
+        self.addTab(w, read_QIcon('tab_search.png'), _('Network Znodes'))
         if not self.mn_list.protx_loading:
             self.reg_model.reload_data()
         return w
@@ -596,6 +596,12 @@ class Dip3TabWidget(QTabWidget):
         menu.addAction(_('Details'),
                        lambda: Dip3MNInfoDialog(self, protx_hash=h).show())
         menu.exec_(self.reg_view.viewport().mapToGlobal(position))
+
+    def keyPressEvent(self, event):
+        super(Dip3TabWidget, self).keyPressEvent(event)
+        if event.key() == Qt.Key_Escape:
+            self.w_view.clearSelection();
+            self.on_wallet_model_reset()
 
     def create_wallet_mn_tab(self):
         w = QWidget()
@@ -661,7 +667,7 @@ class Dip3TabWidget(QTabWidget):
         vbox.addWidget(hw)
         vbox.addWidget(self.w_view)
         w.setLayout(vbox)
-        self.addTab(w, read_QIcon('tab_dip3.png'), _('Wallet MNs'))
+        self.addTab(w, read_QIcon('tab_dip3.png'), _('Wallet Znodes'))
         if not self.mn_list.protx_loading:
             self.w_model.reload_data()
         return w
@@ -777,11 +783,11 @@ class Dip3TabWidget(QTabWidget):
         mn = self.manager.mns.get(alias)
         if not mn:
             return
-        if not self.gui.question(_('Do you want to remove the masternode '
+        if not self.gui.question(_('Do you want to remove the Znode '
                                    'configuration for %s?') % alias):
             return
         if mn.protx_hash:
-            if not self.gui.question(_('Masternode %s has RroRegTxHash '
+            if not self.gui.question(_('Znode %s has RroRegTxHash '
                                        'already set. Are you sure?') % alias):
                 return
         self.manager.remove_mn(self.w_cur_alias)

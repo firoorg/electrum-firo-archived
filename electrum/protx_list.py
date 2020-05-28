@@ -98,7 +98,7 @@ class MNList(Logger):
                        else config)
         self.network = network
         self.dash_net = network.dash_net
-        self.dash_net_enabled = config.get('run_dash_net', True)
+        self.dash_net_enabled = config.get('run_dash_net', False)
         self.load_mns = config.get('protx_load_mns', True)
         self.load_mns = False if IS_ANDROID else self.load_mns
 

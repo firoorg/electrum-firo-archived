@@ -42,6 +42,8 @@ from .bitcoin import (TYPE_ADDRESS, TYPE_PUBKEY, TYPE_SCRIPT, hash_160,
                       opcodes, add_number_to_script, base_decode, is_segwit_script_type)
 from .crypto import sha256d
 from .keystore import xpubkey_to_address, xpubkey_to_pubkey
+from .dash_tx import (ProTxBase, read_extra_payload, serialize_extra_payload,
+                      to_varbytes)
 from .logging import get_logger
 
 
@@ -136,20 +138,24 @@ class BCDataStream(object):
         self.write(string)
 
     def read_bytes(self, length):
-        try:
-            result = self.input[self.read_cursor:self.read_cursor+length]
+        assert length >= 0
+        input_len = len(self.input)
+        read_begin = self.read_cursor
+        read_end = read_begin + length
+        if 0 <= read_begin <= input_len and read_end <= input_len:
+            result = self.input[read_begin:read_end]
             self.read_cursor += length
             return result
-        except IndexError:
-            raise SerializationError("attempt to read past end of buffer") from None
+        else:
+            raise SerializationError('attempt to read past end of buffer')
 
     def can_read_more(self) -> bool:
         return self.bytes_left() > 0
 
     def bytes_left(self):
         if not self.input:
-            return False
-        return self.read_cursor < len(self.input)
+            return 0
+        return len(self.input) - self.read_cursor
 
     def read_boolean(self): return self.read_bytes(1)[0] != chr(0)
     def read_char(self): return self._read_num('<b')
@@ -570,7 +576,23 @@ def deserialize(raw: str, force_full_parse=False) -> dict:
     full_parse = force_full_parse or is_partial
     vds = BCDataStream()
     vds.write(raw_bytes)
-    d['version'] = vds.read_int32()
+    return read_vds(vds, d, full_parse, alone_data=True)
+
+def read_vds(vds, d, full_parse, alone_data=False):
+    # support DIP2 deserialization
+    header = vds.read_uint32()
+    tx_type = header >> 16  # DIP2 tx type
+    if tx_type:
+        version = header & 0x0000ffff
+    else:
+        version = header
+
+    if tx_type and version < 3:
+        version = header
+        tx_type = 0
+
+    d['version'] = version
+    d['tx_type'] = tx_type
     n_vin = vds.read_compact_size()
     is_segwit = (n_vin == 0)
     if is_segwit:
@@ -587,7 +609,11 @@ def deserialize(raw: str, force_full_parse=False) -> dict:
             txin = d['inputs'][i]
             parse_witness(vds, txin, full_parse=full_parse)
     d['lockTime'] = vds.read_uint32()
-    if vds.can_read_more():
+    if tx_type:
+        d['extra_payload'] = read_extra_payload(vds, tx_type)
+    else:
+        d['extra_payload'] = b''
+    if alone_data and vds.can_read_more():
         raise SerializationError('extra junk at the end')
     return d
 
@@ -624,7 +650,9 @@ class Transaction:
         self._inputs = None
         self._outputs = None  # type: List[TxOutput]
         self.locktime = 0
-        self.version = 1
+        self.version = 2
+        self.tx_type = 0
+        self.extra_payload = b''
         # by default we assume this is a partial txn;
         # this value will get properly set when deserializing
         self.is_partial_originally = True
@@ -719,29 +747,57 @@ class Transaction:
         assert not self.is_complete()
         self.raw = None
 
-    def deserialize(self, force_full_parse=False):
+    def deserialize(self, force_full_parse=False,
+                    extra_payload_for_json=False):
         if self.raw is None:
             return
             #self.raw = self.serialize()
         if self._inputs is not None:
             return
         d = deserialize(self.raw, force_full_parse)
+        res = self.set_data_from_dict(d)
+        if extra_payload_for_json:
+            extra_payload = self.extra_payload
+            if isinstance(extra_payload, ProTxBase):
+                extra_payload_json = extra_payload._asdict()
+            else:
+                extra_payload_json = bh2u(extra_payload)
+            res.update({'extra_payload': extra_payload_json})
+        return res
+
+    def set_data_from_dict(self, d):
         self._inputs = d['inputs']
         self._outputs = [TxOutput(x['type'], x['address'], x['value']) for x in d['outputs']]
         self.locktime = d['lockTime']
         self.version = d['version']
+        self.tx_type = d['tx_type']
+        self.extra_payload = d['extra_payload']
         self.is_partial_originally = d['partial']
         self._segwit_ser = d['segwit_ser']
         return d
 
     @classmethod
-    def from_io(klass, inputs, outputs, locktime=0, version=None):
+    def read_vds(cls, vds, alone_data=False):
+        d = {}
+        d['partial'] = full_parse = False
+        d = read_vds(vds, d, full_parse, alone_data)
+        tx = cls(None)
+        tx.set_data_from_dict(d)
+        return tx
+
+    @classmethod
+    def from_io(klass, inputs, outputs, locktime=0, version=None,
+                tx_type=0, extra_payload=b''):
         self = klass(None)
         self._inputs = inputs
         self._outputs = outputs
         self.locktime = locktime
         if version is not None:
             self.version = version
+        if tx_type:
+            self.version = 3
+            self.tx_type = tx_type
+            self.extra_payload = extra_payload
         self.BIP69_sort()
         return self
 
@@ -1018,6 +1074,13 @@ class Transaction:
             txins = var_int(len(inputs)) + ''.join(self.serialize_input(txin, self.get_preimage_script(txin) if txin_index==k else '')
                                                    for k, txin in enumerate(inputs))
             txouts = var_int(len(outputs)) + ''.join(self.serialize_output(o) for o in outputs)
+        if self.tx_type:
+            uVersion = int_to_hex(self.version, 2)
+            uTxType = int_to_hex(self.tx_type, 2)
+            vExtra = bh2u(to_varbytes(serialize_extra_payload(self)))
+            preimage = uVersion + uTxType + txins + txouts + nLocktime + vExtra + nHashType
+        else:
+            nVersion = int_to_hex(self.version, 4)
             preimage = nVersion + txins + txouts + nLocktime + nHashType
         return preimage
 
@@ -1044,6 +1107,11 @@ class Transaction:
         outputs = self.outputs()
         txins = var_int(len(inputs)) + ''.join(self.serialize_input(txin, self.input_script(txin, estimate_size)) for txin in inputs)
         txouts = var_int(len(outputs)) + ''.join(self.serialize_output(o) for o in outputs)
+        if self.tx_type:
+            uVersion = int_to_hex(self.version, 2)
+            uTxType = int_to_hex(self.tx_type, 2)
+            vExtra = bh2u(to_varbytes(serialize_extra_payload(self)))
+            return uVersion + uTxType + txins + txouts + nLocktime + vExtra
         use_segwit_ser_for_estimate_size = estimate_size and self.is_segwit(guess_for_address=True)
         use_segwit_ser_for_actual_use = not estimate_size and \
                                         (self.is_segwit() or any(txin['type'] == 'address' for txin in inputs))
@@ -1058,9 +1126,9 @@ class Transaction:
 
     def txid(self):
         self.deserialize()
-        all_segwit = all(self.is_segwit_input(x) for x in self.inputs())
-        if not all_segwit and not self.is_complete():
-            return None
+        # all_segwit = all(self.is_segwit_input(x) for x in self.inputs())
+        # if not all_segwit and not self.is_complete():
+        #     return None
         ser = self.serialize_to_network(witness=False)
         return bh2u(sha256d(bfh(ser))[::-1])
 

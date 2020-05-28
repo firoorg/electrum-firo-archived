@@ -456,7 +456,8 @@ class Blockchain(Logger):
 
     @with_lock
     def save_header(self, header: dict) -> None:
-        assert self.size() == header.get('block_height') - self.forkpoint
+        if self.size() != header.get('block_height') - self.forkpoint:
+            assert self.size() != header.get('block_height') - self.forkpoint, "size=%i, nHeight=%i, forkpoint=%i" % (self.size(), header.get('block_height'), self.forkpoint)
         delta = constants.net.COIN.static_header_offset(header.get('block_height')) - constants.net.COIN.static_header_offset(self.forkpoint)
         data = bfh(serialize_header(header))
         # headers are only _appended_ to the end:

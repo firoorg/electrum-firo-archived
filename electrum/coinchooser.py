@@ -218,9 +218,11 @@ class CoinChooserBase(Logger):
         return change
 
     def _construct_tx_from_selected_buckets(self, *, buckets, base_tx, change_addrs,
-                                            fee_estimator_w, dust_threshold, base_weight):
+                                            fee_estimator_w, dust_threshold, base_weight,
+                                            tx_type=0, extra_payload=b''):
         # make a copy of base_tx so it won't get mutated
-        tx = Transaction.from_io(base_tx.inputs()[:], base_tx.outputs()[:])
+        tx = Transaction.from_io(base_tx.inputs()[:], base_tx.outputs()[:],
+                                 tx_type=tx_type, extra_payload=extra_payload)
 
         tx.add_inputs([coin for b in buckets for coin in b.coins])
         tx_weight = self._get_tx_weight(buckets, base_weight=base_weight)
@@ -261,7 +263,7 @@ class CoinChooserBase(Logger):
         return total_weight
 
     def make_tx(self, coins, inputs, outputs, change_addrs, fee_estimator_vb,
-                dust_threshold):
+                dust_threshold, tx_type=0, extra_payload=b''):
         """Select unspent coins to spend to pay outputs.  If the change is
         greater than dust_threshold (after adding the change output to
         the transaction) it is kept, otherwise none is sent and it is
@@ -279,13 +281,15 @@ class CoinChooserBase(Logger):
         self.p = PRNG(''.join(sorted(utxos)))
 
         # Copy the outputs so when adding change we don't modify "outputs"
-        base_tx = Transaction.from_io(inputs[:], outputs[:])
+        base_tx = Transaction.from_io(inputs[:], outputs[:],
+                                      tx_type=tx_type,
+                                      extra_payload=extra_payload)
         input_value = base_tx.input_value()
 
         # Weight of the transaction with no inputs and no change
-        # Note: this will use legacy tx serialization as the need for "segwit"
-        # would be detected from inputs. The only side effect should be that the
-        # marker and flag are excluded, which is compensated in get_tx_weight()
+        # Note: this will use legacy tx serialization. The only side effect
+        # should be that the marker and flag are excluded, which is
+        # compensated in get_tx_weight()
         # FIXME calculation will be off by this (2 wu) in case of RBF batching
         base_weight = base_tx.estimated_weight()
         spent_amount = base_tx.output_value()
@@ -311,7 +315,9 @@ class CoinChooserBase(Logger):
                                                             change_addrs=change_addrs,
                                                             fee_estimator_w=fee_estimator_w,
                                                             dust_threshold=dust_threshold,
-                                                            base_weight=base_weight)
+                                                            base_weight=base_weight,
+                                                            tx_type=tx_type,
+                                                            extra_payload=extra_payload)
 
         # Collect the coins into buckets
         all_buckets = self.bucketize_coins(coins, fee_estimator_vb=fee_estimator_vb)
