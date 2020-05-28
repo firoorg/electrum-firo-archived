@@ -1158,7 +1158,7 @@ class ServiceWizardPage(QWizardPage):
         str_mn_service = str(new_mn.service)
         if self.cur_service is None or self.cur_service != str_mn_service:
             self.cur_service = str_mn_service
-            self.srv_addr.setText(new_mn.service.ip)
+            self.srv_addr.setText(str(new_mn.service.ip))
             self.srv_port.setText('%d' % new_mn.service.port)
 
     def validatePage(self):

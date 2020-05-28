@@ -783,11 +783,11 @@ class Dip3TabWidget(QTabWidget):
         mn = self.manager.mns.get(alias)
         if not mn:
             return
-        if not self.gui.question(_('Do you want to remove the masternode '
+        if not self.gui.question(_('Do you want to remove the Znode '
                                    'configuration for %s?') % alias):
             return
         if mn.protx_hash:
-            if not self.gui.question(_('Masternode %s has RroRegTxHash '
+            if not self.gui.question(_('Znode %s has RroRegTxHash '
                                        'already set. Are you sure?') % alias):
                 return
         self.manager.remove_mn(self.w_cur_alias)
