@@ -17,7 +17,7 @@ from electrum_xzc.protx import ProRegTxExc, ProTxManagerExc
 from electrum_xzc.i18n import _
 
 from .protx_wizards import Dip3MasternodeWizard, Dip3FileWizard
-from .util import icon_path, read_QIcon
+from .util import icon_path, read_QIcon, ColorScheme
 
 
 VALID_MASTERNODE_COLOR = '#008000'
@@ -654,6 +654,10 @@ class Dip3TabWidget(QTabWidget):
         vbox = QVBoxLayout()
         hbox.setContentsMargins(0, 0, 0, 0)
         hbox.addWidget(self.w_label)
+        if self.wallet.keystore.type == 'hardware':
+            self.w_hardware_warning = QLabel("Registering a Znode with a hardware wallet is not supported")
+            self.w_hardware_warning.setStyleSheet(ColorScheme.WARNING.as_stylesheet())
+            hbox.addWidget(self.w_hardware_warning)
         hbox.addStretch(1)
         hbox.addWidget(self.w_del_btn)
         hbox.addWidget(self.w_up_params_btn)

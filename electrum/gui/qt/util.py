@@ -758,6 +758,9 @@ class ColorScheme:
     PURPLE = ColorSchemeItem("#8A2BE2", "#8A2BE2")
     DEFAULT = ColorSchemeItem("black", "white")
 
+    WARNING = ColorSchemeItem("#bda800", "#f18c8c")
+    ERROR = ColorSchemeItem("#cc1111", "#f18c8c")
+
     @staticmethod
     def has_dark_background(widget):
         brightness = sum(widget.palette().color(QPalette.Background).getRgb()[0:3])
