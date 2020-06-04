@@ -12,6 +12,7 @@ from electrum_xzc.transaction import deserialize, Transaction
 from electrum_xzc.keystore import Hardware_KeyStore, is_xpubkey, parse_xpubkey
 from electrum_xzc.base_wizard import ScriptTypeNotSupported, HWD_SETUP_NEW_WALLET
 from electrum_xzc.logging import get_logger
+from electrum_xzc.dash_tx import to_varbytes, serialize_extra_payload
 
 from ..hw_wallet import HW_PluginBase
 from ..hw_wallet.plugin import (is_any_tx_output_on_change_branch, trezor_validate_op_return_output_and_get_data,
@@ -485,4 +486,9 @@ class TrezorPlugin(HW_PluginBase):
             TxOutputBinType(amount=vout['value'], script_pubkey=bfh(vout['scriptPubKey']))
             for vout in d['outputs']
         ]
+        if t.version > 2:
+            tx_type = d['tx_type']
+            if tx_type:
+                t.extra_data = to_varbytes(serialize_extra_payload(tx))
+                t.version |= tx_type << 16
         return t
