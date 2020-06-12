@@ -184,7 +184,7 @@ class TrezorPlugin(HW_PluginBase):
         return client
 
     def get_coin_name(self):
-        return "Zcoin Testnet" if constants.net.TESTNET else "Zcoin"
+        return "Dash Testnet" if constants.net.TESTNET else "Dash"
 
     def initialize_device(self, device_id, wizard, handler):
         # Initialization method
@@ -349,6 +349,7 @@ class TrezorPlugin(HW_PluginBase):
         script_type = self.get_trezor_input_script_type(wallet.txin_type)
 
         # prepare multisig, if available:
+        # prepare multisig, if available:
         xpubs = wallet.get_master_public_keys()
         if len(xpubs) > 1:
             pubkeys = wallet.get_public_keys(address)
@@ -369,7 +370,10 @@ class TrezorPlugin(HW_PluginBase):
             txinputtype = TxInputType()
             if txin['type'] == 'coinbase':
                 prev_hash = b"\x00"*32
-                prev_index = txin['prevout_n'] if txin['prevout_n'] != 0xffffffff else 1 #0xffffffff = signed int -1
+                if txin['scriptSig'].startswith('c4') and txin['prevout_n'] == 0xffffffff:
+                    prev_index = 1
+                else:
+                    prev_index = txin['prevout_n']
             else:
                 if for_sig:
                     x_pubkeys = txin['x_pubkeys']

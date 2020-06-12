@@ -655,8 +655,9 @@ class Dip3TabWidget(QTabWidget):
         hbox.setContentsMargins(0, 0, 0, 0)
         hbox.addWidget(self.w_label)
         if self.wallet.keystore.type == 'hardware':
-            self.w_hardware_warning = QLabel("Registering a Znode with a hardware wallet is not supported")
+            self.w_hardware_warning = QLabel("Hardware wallets cannot register a Znode. Please use <a href=\"https://github.com/zcoinofficial/znode-tool-evo\">Znode Tool Evo</a> instead.")
             self.w_hardware_warning.setStyleSheet(ColorScheme.WARNING.as_stylesheet())
+            self.w_hardware_warning.setOpenExternalLinks(True)
             hbox.addWidget(self.w_hardware_warning)
         hbox.addStretch(1)
         hbox.addWidget(self.w_del_btn)
