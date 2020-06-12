@@ -73,6 +73,7 @@ from electrum_xzc.simple_config import SimpleConfig
 from electrum_xzc.logging import Logger
 from electrum_xzc.paymentrequest import PR_PAID
 from electrum_xzc.masternode_manager import MasternodeManager
+from electrum_xzc.dash_tx import DashTxError
 
 from .exception_window import Exception_Hook
 from .amountedit import AmountEdit, BTCAmountEdit, MyLineEdit, FeerateEdit
@@ -92,7 +93,6 @@ from .update_checker import UpdateCheck, UpdateCheckThread
 from .masternode_dialog import MasternodeDialog
 from .dash_qt import ExtraPayloadWidget
 from .protx_qt import create_dip3_tab
-
 
 class StatusBarButton(QPushButton):
     def __init__(self, icon, tooltip, func):
