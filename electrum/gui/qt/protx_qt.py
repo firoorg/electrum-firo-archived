@@ -421,6 +421,12 @@ class Dip3TabBar(QTabBar):
         if local_h is not None:
             self.local_h.setText(str(local_h))
 
+class DeselectableTableView(QTableView):
+    on_deselect = pyqtSignal()
+    def mousePressEvent(self, event):
+        self.clearSelection()
+        self.on_deselect.emit()
+        QTableView.mousePressEvent(self, event)
 
 class Dip3TabWidget(QTabWidget):
     # Signals need to notify from not Qt thread
@@ -600,8 +606,11 @@ class Dip3TabWidget(QTabWidget):
     def keyPressEvent(self, event):
         super(Dip3TabWidget, self).keyPressEvent(event)
         if event.key() == Qt.Key_Escape:
-            self.w_view.clearSelection();
-            self.on_wallet_model_reset()
+            self.clear_selection()
+
+    def clear_selection(self):
+        self.w_view.clearSelection()
+        self.on_wallet_model_reset()
 
     def create_wallet_mn_tab(self):
         w = QWidget()
@@ -625,9 +634,10 @@ class Dip3TabWidget(QTabWidget):
         self.w_up_srv_btn.clicked.connect(self.on_make_pro_up_srv_tx)
         self.w_up_reg_btn.clicked.connect(self.on_make_pro_up_reg_tx)
 
-        self.w_view = QTableView()
+        self.w_view = DeselectableTableView()
         self.w_view.setContextMenuPolicy(Qt.CustomContextMenu)
         self.w_view.customContextMenuRequested.connect(self.create_wallet_menu)
+        self.w_view.on_deselect.connect(self.clear_selection)
         self.w_hheader = QHeaderView(Qt.Horizontal, self.w_view)
         self.w_hheader.setSectionResizeMode(QHeaderView.ResizeToContents)
         self.w_hheader.setStretchLastSection(True)
