@@ -3360,7 +3360,6 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger):
 
         self.gui_object.timer.timeout.disconnect(self.timer_actions)
         self.gui_object.close_window(self)
-        self.daemon.stop()
 
     def plugins_dialog(self):
         self.pluginsdialog = d = WindowModalDialog(self, _('Electrum Plugins'))
