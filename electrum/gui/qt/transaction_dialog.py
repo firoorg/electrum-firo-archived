@@ -398,6 +398,8 @@ class TxDialog(QDialog, MessageBoxMixin):
         result = 'Coinbase'
         if tx['prevout_n'] != 0xffffffff:
             result = 'Sigma'
+        if tx['scriptSig'].startswith("c7"):
+            result = 'Lelantus'
         return result
 
 class QTextEditWithDefaultSize(QTextEdit):

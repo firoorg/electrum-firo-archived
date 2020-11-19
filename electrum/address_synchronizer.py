@@ -818,4 +818,6 @@ class AddressSynchronizer(Logger):
             result = 1
             if tx.inputs()[0]['prevout_n'] != 0xffffffff:
                 result = 2
+            if tx.inputs()[0]['scriptSig'].startswith("c7"):
+                result = 2
         return result
