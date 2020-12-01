@@ -1,23 +1,23 @@
 {
-    "electrumx.zcoin.io": {
+    "electrumx.firo.org": {
         "pruning": "-",
         "s": "50002",
         "t": "50001",
         "version": "1.4"
     },
-    "electrumx01.zcoin.io": {
+    "electrumx01.firo.org": {
         "pruning": "-",
         "s": "50002",
         "t": "50001",
         "version": "1.4"
     },
-    "electrumx02.zcoin.io": {
+    "electrumx02.firo.org": {
         "pruning": "-",
         "s": "50002",
         "t": "50001",
         "version": "1.4"
     },
-    "electrumx03.zcoin.io": {
+    "electrumx03.firo.org": {
         "pruning": "-",
         "s": "50002",
         "t": "50001",
