@@ -656,20 +656,18 @@ def time_difference(distance_in_time, include_seconds):
         return "over %d years" % (round(distance_in_minutes / 525600))
 
 mainnet_block_explorers = {
-    'explorer.zcoin.io': ('https://explorer.zcoin.io',
+    'explorer.firo.org': ('https://explorer.firo.org',
                         {'tx': '/tx/', 'addr': '/address/'}),
-    'blockbook.zcoin.io': ('https://blockbook.zcoin.io',
+    'blockbook.firo.org': ('https://blockbook.firo.org',
                           {'tx': '/tx/', 'addr': '/address/'}),
-    'chainz.cryptoid.info': ('https://chainz.cryptoid.info/xzc',
+    'chainz.cryptoid.info': ('https://chainz.cryptoid.info/firo',
                         {'tx': '/tx.dws?', 'addr': '/address.dws?'}),
-    'CryptoCore': ('https://xzc.ccore.online',
+    'CryptoCore': ('https://firo.ccore.online',
                         {'tx': '/transaction/', 'addr': '/address/'}),
-    'bchain.info': ('https://bchain.info/XZC',
-                        {'tx': '/tx/', 'addr': '/addr/'}),
 }
 
 testnet_block_explorers = {
-    'testexplorer.zcoin.io': ('http://testexplorer.zcoin.io',
+    'testexplorer.firo.org': ('http://testexplorer.firo.org',
                         {'tx': '/tx/', 'addr': '/address/'}),
 }
 
@@ -679,7 +677,7 @@ def block_explorer_info():
 
 def block_explorer(config: 'SimpleConfig') -> str:
     from . import constants
-    default_ = 'explorer.zcoin.io'
+    default_ = 'explorer.firo.io'
     be_key = config.get('block_explorer', default_)
     be = block_explorer_info().get(be_key)
     return be_key if be is not None else default_
