@@ -26,7 +26,7 @@ Electrum - Lightweight Bitcoin client
 Getting started
 ===============
 
-Electrum is a pure python application. Please download a release binary for your OS from the releases page: https://github.com/zcoinofficial/electrum-xzc/releases
+Electrum is a pure python application. Please download a release binary for your OS from the releases page: https://github.com/firoorg/electrum-firo/releases
 Do always backup your account secret before upgrading to a newer version.
 
 
