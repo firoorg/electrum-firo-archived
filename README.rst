@@ -1,4 +1,4 @@
-Electrum - Lightweight Bitcoin client
+Electrum Firo - Lightweight Firo client
 =====================================
 
 ::
