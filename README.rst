@@ -1,4 +1,4 @@
-Electrum - Lightweight Bitcoin client
+Electrum Firo - Lightweight Firo client
 =====================================
 
 ::
@@ -26,7 +26,7 @@ Electrum - Lightweight Bitcoin client
 Getting started
 ===============
 
-Electrum is a pure python application. Please download a release binary for your OS from the releases page: https://github.com/zcoinofficial/electrum-xzc/releases
+Electrum is a pure python application. Please download a release binary for your OS from the releases page: https://github.com/firoorg/electrum-firo/releases
 Do always backup your account secret before upgrading to a newer version.
 
 
@@ -36,8 +36,8 @@ Development version
 
 Check out the code from GitHub::
 
-    git clone git://github.com/spesmilo/electrum.git
-    cd electrum
+    git clone git://github.com/firoorg/electrum-firo.git
+    cd electrum-firo
 
 Run install (this should install dependencies)::
 
